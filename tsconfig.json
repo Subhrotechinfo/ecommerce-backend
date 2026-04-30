@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        // --- Module system ---
+        "module": "nodenext", // Stable in TS6, no longer needs ignoreDeprecations
+        "moduleResolution": "nodenext",
+        "target": "ESNext",
+        // --- TS6 new/changed flags ---
+        "erasableSyntaxOnly": false, // NEW in TS6: disallows non-erasable TS syntax (enums, namespaces)
+        // Needed for native Node.js --strip-types compatibility
+        "noUncheckedSideEffectImports": true, // Now recommended true (was false before)
+        // --- Project references (Turborepo) ---
+        "composite": true,
+        "declaration": true, // Required when composite: true
+        "declarationMap": true, // Source maps for .d.ts files
+        // --- Interop ---
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        // --- Quality ---
+        "skipLibCheck": true,
+        "strict": false, // Set true per-app if you want strict mode
+        // --- Path aliases (libs) ---
+        "paths": {
+            "@libs/common": [
+                "./libs/common/src/index.ts"
+            ],
+            "@libs/common/*": [
+                "./libs/common/src/*"
+            ],
+            "@libs/core": [
+                "./libs/core/src/index.ts"
+            ],
+            "@libs/core/*": [
+                "./libs/core/src/*"
+            ],
+        }
+    },
+    "ts-node": {
+        "require": [
+            "tsconfig-paths/register"
+        ]
+    }
+}

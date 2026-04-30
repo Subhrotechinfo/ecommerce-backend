@@ -1,0 +1,28 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        // --- NestJS decorator support ---
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "useDefineForClassFields": false,
+        // --- Output ---
+        "removeComments": true,
+        "sourceMap": true,
+        // "incremental" → REMOVED (redundant with composite, removed in TS6)
+    },
+    "include": [
+        "src/**/*"
+    ], // was ["src"] — pattern fixed to include all files
+    "exclude": [
+        "**/*.spec.ts",
+        "node_modules",
+        "dist"
+    ],
+    "references": [
+        {
+            "path": "../common"
+        }
+    ]
+}

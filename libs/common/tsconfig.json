@@ -1,0 +1,26 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "./src",
+        // --- NestJS decorator support ---
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        // TS6: useDefineForClassFields must be false for NestJS decorators to work
+        "useDefineForClassFields": false,
+        // --- Output ---
+        "removeComments": true,
+        "sourceMap": true,
+        // --- Build performance ---
+        // "incremental" removed: conflicts with composite in TS6 (use composite only)
+        // composite: true already inherited from root
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "**/*.spec.ts",
+        "node_modules",
+        "dist"
+    ]
+}
