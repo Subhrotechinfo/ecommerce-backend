@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { getAppConfig } from './config';
 import {
   getAppCommonConfig,
@@ -12,12 +11,13 @@ import {
   setupSwagger,
 } from '@libs/common';
 import { WinstonModule } from 'nest-winston';
+import { ProductsModule } from './products.module';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   const logger = WinstonModule.createLogger(getWinstonConfig(appName, nodeEnv));
 
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create(ProductsModule, {
     logger,
   });
   setupSwagger(app, appName, ['/auth-service']);
