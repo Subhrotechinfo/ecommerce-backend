@@ -28,7 +28,7 @@ import { ServerException } from "../exceptions";
 type PropertyType = Type<unknown> | Function | Record<string, any> | "file";
 
 interface DtoPropertyOptions {
-  type: PropertyType;
+  type?: PropertyType;
   structure?: "array" | "enum" | "enumArray" | "dto" | "dtoArray";
   validated?: boolean;
   required?: boolean;
@@ -46,9 +46,9 @@ interface DtoPropertyOptions {
  * @returns {PropertyDecorator} The ApiProperty decorator.
  */
 export function ApiPropertyExtended(
-  options: DtoPropertyOptions,
+  options?: DtoPropertyOptions,
 ): PropertyDecorator {
-  if (options === undefined || _.isEmpty(options)) {
+  if (!options || _.isEmpty(options)) {
     return ApiProperty({
       required: false,
     });
@@ -73,7 +73,7 @@ export function ApiPropertyExtended(
     ...propertyOptions,
     type,
     ...(isFile && { format: "binary" }),
-    ...(isEnum && { enum: type, enumName: type.name }),
+    ...(isEnum && { enum: type, enumName: (type as any).name }),
     isArray,
     example,
     required: propertyOptions.required,
@@ -89,8 +89,8 @@ export function ApiPropertyExtended(
  * @param {DtoPropertyOptions} options - The property options containing validation/transformation rules.
  * @returns The decorators for the property.
  */
-export function ValidateTransform(options: DtoPropertyOptions) {
-  if (options === undefined || _.isEmpty(options)) {
+export function ValidateTransform(options?: DtoPropertyOptions) {
+  if (!options || _.isEmpty(options)) {
     return applyDecorators(
       Expose(),
       IsOptional(),
@@ -127,12 +127,12 @@ export function ValidateTransform(options: DtoPropertyOptions) {
   if (_.has(propertyOptions, "defaultValue")) {
     if (isDto) {
       throw new ValidationError(
-        `Property ${type.name} is a DTO but defaultValue set. Please set defaultValue in child DTO instead`,
+        `Property ${(type as any).name} is a DTO but defaultValue set. Please set defaultValue in child DTO instead`,
       );
     }
     if (propertyOptions.required) {
       throw new ValidationError(
-        `Property ${type.name} is required but defaultValue set. Please remove defaultValue`,
+        `Property ${(type as any).name} is required but defaultValue set. Please remove defaultValue`,
       );
     }
 
@@ -185,7 +185,7 @@ export function ValidateTransform(options: DtoPropertyOptions) {
       default:
         if (type && !isEnum && !isDto) {
           Logger.warn(
-            `Property type ${type.name} is not Primitive type but are not specified structure (enum, dto)`,
+            `Property type ${(type as any).name} is not Primitive type but are not specified structure (enum, dto)`,
           );
         }
     }
@@ -210,7 +210,7 @@ export function ValidateTransform(options: DtoPropertyOptions) {
         ValidateNested({
           each: isArray,
           message: (arg) =>
-            `Field ${arg.property} with type=${type.name} can not validate nested`,
+            `Field ${arg.property} with type=${(type as any).name} can not validate nested`,
           groups: validateGroup,
         }),
       );

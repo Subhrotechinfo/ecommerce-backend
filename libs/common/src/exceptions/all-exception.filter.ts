@@ -26,7 +26,7 @@ export class AllExceptionFilter implements ExceptionFilter {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  catch(exception: unknown, host: ArgumentsHost): Observable<any> {
+  catch(exception: unknown, host: ArgumentsHost): void {
     // In certain situations `httpAdapter` might not be available in the
     // constructor method, thus resolve it here.
     const httpAdapter = this.httpAdapterHost?.httpAdapter;
@@ -87,12 +87,16 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     // Remove error details in production
     const nodeEnv = this.configService.get<NodeEnv>("appCommon.nodeEnv");
-    const isCriticalEnv = [NodeEnv.Production, NodeEnv.Staging].includes(
-      nodeEnv,
-    );
-    isCriticalEnv && delete errorData.details;
+    if (nodeEnv) {
+      const isCriticalEnv = [NodeEnv.Production, NodeEnv.Staging].includes(
+        nodeEnv,
+      );
+      isCriticalEnv && delete errorData.details;
+    }
 
-    if (isRpcContext) return throwError(() => errorData);
+    if (isRpcContext) {
+      throw new HttpException(errorData, httpStatus);
+    }
 
     if (!response.headersSent) {
       if (httpAdapter) {

@@ -20,4 +20,4 @@ import {
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],
 })
-export class ProductsModule { }
+export class ProductsModule {}

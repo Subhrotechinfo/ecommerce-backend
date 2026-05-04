@@ -25,24 +25,24 @@ export class PaginationQueryDto {
 
 export class PaginationMetadataResponseDto {
   @ApiProperty()
-  page: number;
+  page!: number;
 
   @ApiProperty()
-  pageSize: number;
+  pageSize!: number;
 
   @ApiProperty()
-  totalPages: number;
+  totalPages!: number;
 
   @ApiProperty()
-  total: number;
+  total!: number;
 }
 
 export class PaginationResponseDto<T> {
   @ApiProperty()
-  data: T[];
+  data!: T[];
 
   @ApiProperty({
     type: PaginationMetadataResponseDto,
   })
-  pagination: PaginationMetadataResponseDto;
+  pagination!: PaginationMetadataResponseDto;
 }

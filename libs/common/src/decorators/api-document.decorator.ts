@@ -21,6 +21,7 @@ import { BodyContentType } from "../enums";
 type ApiResponseOptions = SwaggerApiResponseOptions & {
   isPagination?: boolean;
   status?: HttpStatus;
+  type?: Type<unknown>;
 };
 
 type ApiOperationOptions = SwaggerApiOperationOptions & {
@@ -175,9 +176,9 @@ export const ResponsePaginated = <Model extends Type<unknown>>(
 function addApiResponse(
   option: ApiResponseOptions,
   decorators: (MethodDecorator | ClassDecorator)[],
-) {
-  if (option?.isPagination) {
-    decorators.push(ResponsePaginated(option["type"], option));
+): void {
+  if (option?.isPagination && option?.type) {
+    decorators.push(ResponsePaginated(option.type, option));
   } else {
     decorators.push(ApiResponse(option));
   }

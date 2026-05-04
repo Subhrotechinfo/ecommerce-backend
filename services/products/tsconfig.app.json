@@ -1,0 +1,24 @@
+// {
+//   "extends": "../../tsconfig.json",
+//   "compilerOptions": {
+//     "declaration": false,
+//     "outDir": "./dist"
+//   },
+//   "include": [
+//     "src/**/*"
+//   ],
+//   "exclude": [
+//     "node_modules",
+//     "dist",
+//     "test",
+//     "**/*spec.ts"
+//   ],
+//   "references": [
+//     {
+//       "path": "../../libs/common/tsconfig.lib.common.json"
+//     },
+//     {
+//       "path": "../../libs/core/tsconfig.lib.core.json"
+//     }
+//   ]
+// }

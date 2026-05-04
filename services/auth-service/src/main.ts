@@ -7,26 +7,24 @@ import { AppModule } from './app.module';
 import { getAppConfig } from './config';
 import {
   getAppCommonConfig,
-  getWinstonConfig,
-  logBootstrapInfo,
+  // getWinstonConfig,
+  // logBootstrapInfo,
   setupSwagger,
 } from '@libs/common';
 import { WinstonModule } from 'nest-winston';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
-  const logger = WinstonModule.createLogger(getWinstonConfig(appName, nodeEnv));
+  // const logger = WinstonModule.createLogger(getWinstonConfig(appName, nodeEnv));
 
-  const app = await NestFactory.create(AppModule, {
-    logger,
-  });
+  const app = await NestFactory.create(AppModule);
   setupSwagger(app, appName, ['/auth-service']);
   await app.init();
   await app.listen(appPort);
-  logBootstrapInfo(app, {
-    nodeEnv,
-    logger,
-    appPort,
-  });
+  // logBootstrapInfo(app, {
+  //   nodeEnv,
+  //   logger,
+  //   appPort,
+  // });
 }
 bootstrap();

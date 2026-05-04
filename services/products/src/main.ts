@@ -4,14 +4,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
 import { getAppConfig } from './config';
-import { getAppCommonConfig, setupSwagger } from '@libs/common';
-import { WinstonModule } from 'nest-winston';
+import { setupSwagger } from '@libs/common';
 import { ProductsModule } from './products.module';
 import { ValidationPipe } from '@nestjs/common';
-import { Logger, PinoLogger } from 'nestjs-pino';
+import { Logger } from 'nestjs-pino';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
-  const { nodeEnv } = getAppCommonConfig();
+  // const { nodeEnv } = getAppCommonConfig();
   // const log = new Logger(appName);
 
   const app = await NestFactory.create(ProductsModule, { bufferLogs: true });

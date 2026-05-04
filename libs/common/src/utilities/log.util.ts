@@ -4,66 +4,66 @@ import chalk from "chalk";
 import { WinstonModuleOptions } from "nest-winston";
 import { NodeEnv } from "../enums";
 
-export function getWinstonConfig(
-  appName: string,
-  nodeEnv: NodeEnv,
-): WinstonModuleOptions {
-  const isCriticalEnv = [NodeEnv.Production, NodeEnv.Staging].includes(nodeEnv);
+// export function getWinstonConfig(
+//   appName: string,
+//   nodeEnv: NodeEnv,
+// ): WinstonModuleOptions {
+//   const isCriticalEnv = [NodeEnv.Production, NodeEnv.Staging].includes(nodeEnv);
 
-  const consoleFormat = winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    winston.format.colorize({ level: true, message: true }),
-    winston.format.json(),
-    winston.format.printf((info) => {
-      const {
-        level,
-        message,
-        timestamp,
-        context: ctx,
-        error: err,
-        ...metadata
-      } = info;
-      const appPrefix = chalk.blue(`[${appName}]`);
-      const context = chalk.cyan(`[${ctx || "Application"}]`);
+//   const consoleFormat = winston.format.combine(
+//     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+//     winston.format.colorize({ level: true, message: true }),
+//     winston.format.json(),
+//     winston.format.printf((info) => {
+//       const {
+//         level,
+//         message,
+//         timestamp,
+//         context: ctx,
+//         error: err,
+//         ...metadata
+//       } = info;
+//       const appPrefix = chalk.blue(`[${appName}]`);
+//       const context = chalk.cyan(`[${ctx || "Application"}]`);
 
-      const error = info.error;
-      let errorOutput = "";
-      if (err instanceof Error) {
-        errorOutput = `\n\t${chalk.red(err)}`;
-      }
+//       const error = info.error;
+//       let errorOutput = "";
+//       if (err instanceof Error) {
+//         errorOutput = `\n\t${chalk.red(err)}`;
+//       }
 
-      let metadataOutput = "";
-      if (Object.keys(metadata).length > 0) {
-        // Format metadata nicely for console
-        if (isCriticalEnv) {
-          metadataOutput = ` | ${Object.entries(metadata)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(" | ")}`;
-        } else {
-          // Pretty format for development
-          metadataOutput = ` ${chalk.white(JSON.stringify(metadata))}`;
-        }
-      }
+//       let metadataOutput = "";
+//       if (Object.keys(metadata).length > 0) {
+//         // Format metadata nicely for console
+//         if (isCriticalEnv) {
+//           metadataOutput = ` | ${Object.entries(metadata)
+//             .map(([key, value]) => `${key}: ${value}`)
+//             .join(" | ")}`;
+//         } else {
+//           // Pretty format for development
+//           metadataOutput = ` ${chalk.white(JSON.stringify(metadata))}`;
+//         }
+//       }
 
-      if (info.message) {
-        return `${appPrefix} - ${info.timestamp}   ${context} ${info.level}: ${info.message} ${metadataOutput} ${errorOutput}`;
-      } else {
-        return `${appPrefix} - ${info.timestamp}   ${context} ${info.level}: ${JSON.stringify(info)}`;
-      }
-    }),
-  );
+//       if (info.message) {
+//         return `${appPrefix} - ${info.timestamp}   ${context} ${info.level}: ${info.message} ${metadataOutput} ${errorOutput}`;
+//       } else {
+//         return `${appPrefix} - ${info.timestamp}   ${context} ${info.level}: ${JSON.stringify(info)}`;
+//       }
+//     }),
+//   );
 
-  return {
-    transports: [
-      // Console transport
-      new winston.transports.Console({
-        level: isCriticalEnv ? "info" : "debug",
-        format: consoleFormat,
-        handleExceptions: true,
-      }),
-    ],
-  };
-}
+//   return {
+//     transports: [
+//       // Console transport
+//       new winston.transports.Console({
+//         level: isCriticalEnv ? "info" : "debug",
+//         format: consoleFormat,
+//         handleExceptions: true,
+//       }),
+//     ],
+//   };
+// }
 
 interface LogBootstrapOptions {
   nodeEnv: NodeEnv;

@@ -1,7 +1,7 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "outDir": "dist",
+        "outDir": "./dist",
         "rootDir": "./src",
         // --- NestJS decorator support ---
         "experimentalDecorators": true,

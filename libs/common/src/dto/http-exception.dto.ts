@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class HttpErrorResponseDto {
   @ApiProperty()
-  statusCode: number;
+  statusCode!: number;
 
   @ApiProperty()
   timestamp?: string;
@@ -11,10 +11,10 @@ export class HttpErrorResponseDto {
   path?: string;
 
   @ApiProperty()
-  errorCode: string;
+  errorCode!: string;
 
   @ApiProperty()
-  message: string;
+  message!: string;
 
   @ApiProperty()
   details?: object;

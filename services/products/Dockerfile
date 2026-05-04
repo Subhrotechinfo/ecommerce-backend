@@ -1,43 +1,30 @@
-FROM node:alpine AS development
+FROM node:lts-alpine AS pruner
 
-WORKDIR /usr/src/app
+WORKDIR /app
+RUN npm install -g turbo
+COPY . .
+RUN npm install -g turbo
+RUN turbo prune --scope=products --docker
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY tsconfig.json ./tsconfig.json
-COPY turbo.json ./turbo.json
+FROM node:lts-alpine AS installer
 
+WORKDIR /app
+COPY --from=pruner /app/out/json .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/turbo.json ./turbo.json
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
 
-COPY services/products ./services/products
-COPY libs ./libs
-COPY apps ./apps
-COPY packages ./packages
+FROM node:lts-alpine AS builder
+WORKDIR /app
+COPY --from=installer /app/ .
+COPY --from=pruner /app/out/full .
+RUN npm install -g pnpm
+RUN pnpm run build --filter=products
 
-RUN npm install -g pnpm turbo
+FROM node:lts-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/ .
 
-RUN pnpm install
-
-RUN pnpm run build --filter=products 
-
-FROM node:alpine AS production
-
-ARG NODE_ENV=production
-
-ENV NODE_ENV=${NODE_ENV}
-
-WORKDIR /usr/src/app
-
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY tsconfig.json tsconfig.json
-COPY turbo.json turbo.json
-COPY packages ./packages
-RUN npm install -g pnpm 
-
-RUN pnpm install --prod
-
-COPY --from=development /usr/src/app/services/products/dist ./dist
-
-CMD ["node", "dist/src/main"]
+CMD ["node", "services/products/dist/main"]
