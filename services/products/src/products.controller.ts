@@ -35,7 +35,7 @@ export class ProductsController {
     try {
       return this.productsService.update(id, updateProductDto);
     } catch (error) {
-      console.log('Product ****************************', error);
+      console.log(error);
     }
   }
 
