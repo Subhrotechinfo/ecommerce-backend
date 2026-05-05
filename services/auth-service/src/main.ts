@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { getAppConfig } from './config';
@@ -11,13 +7,16 @@ import {
   // logBootstrapInfo,
   setupSwagger,
 } from '@libs/common';
-import { WinstonModule } from 'nest-winston';
+import { ValidationPipe } from '@nestjs/common';
+import { Logger } from 'nestjs-pino/Logger';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   // const logger = WinstonModule.createLogger(getWinstonConfig(appName, nodeEnv));
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useLogger(app.get(Logger));
   setupSwagger(app, appName, ['/auth-service']);
   await app.init();
   await app.listen(appPort);

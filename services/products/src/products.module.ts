@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Module } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -8,6 +9,7 @@ import {
   ProductDocument,
   ProductSchema,
 } from './products/models/product.schema';
+import { getAppConfig } from './config';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import {
     DatabaseModule.forFeature([
       { name: ProductDocument.name, schema: ProductSchema },
     ]),
-    LoggerModule,
+    LoggerModule.forRoot(getAppConfig().appName),
   ],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],

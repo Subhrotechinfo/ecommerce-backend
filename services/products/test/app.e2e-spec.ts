@@ -4,7 +4,6 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../auth-service/src/app.module';
 
-
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 

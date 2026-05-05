@@ -10,7 +10,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
-  console.log('Hello file changes.........');
   // const { nodeEnv } = getAppCommonConfig();
   // const log = new Logger(appName);
 
@@ -19,7 +18,7 @@ async function bootstrap() {
   //allow only whitelisted properties and forbid non-whitelisted properties
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
-  setupSwagger(app, appName, ['/auth-service']);
+  setupSwagger(app, appName, ['/products-service']);
   await app.init();
   await app.listen(appPort);
   // logBootstrapInfo(app);
