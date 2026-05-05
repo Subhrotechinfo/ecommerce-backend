@@ -27,7 +27,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: parseInt(process.env.JWT_EXPIRES_IN) },
+        signOptions: { expiresIn: 36000 },
       }),
     }),
   ],
