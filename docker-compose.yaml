@@ -5,11 +5,27 @@ services:
       dockerfile: ./services/products/Dockerfile
       target: runner
     command: pnpm run dev
+    container_name: Products_Service
     env_file:
       - ./services/products/.env
       - .env
     ports:
-      - '3000:3000'
+      - '5002:5002'
+    volumes:
+      - .:/usr/src/app
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./services/auth-service/Dockerfile
+      target: runner
+    command: pnpm run dev
+    container_name: Auth_Service
+    env_file:
+      - ./services/auth-service/.env
+      - .env
+    ports:
+      - '5001:5001'
     volumes:
       - .:/usr/src/app
   mongo:
