@@ -10,7 +10,8 @@ import {
   ProductSchema,
 } from './products/models/product.schema';
 import { getAppConfig } from './config';
-
+// import { ConfigModule } from '@nestjs/config';
+// import * as Joi from 'joi';
 @Module({
   imports: [
     DatabaseModule,
@@ -18,6 +19,12 @@ import { getAppConfig } from './config';
       { name: ProductDocument.name, schema: ProductSchema },
     ]),
     LoggerModule.forRoot(getAppConfig().appName),
+    // ConfigModule.forRoot({
+    //   isGlobal: true,
+    //   validationSchema: Joi.object({
+    //     MONGODB_URI: Joi.string().required(),
+    //   }),
+    // }),
   ],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],

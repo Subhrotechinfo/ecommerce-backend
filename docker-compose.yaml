@@ -8,7 +8,6 @@ services:
     container_name: Products_Service
     env_file:
       - ./services/products/.env
-      - .env
     ports:
       - '5002:5002'
     volumes:
