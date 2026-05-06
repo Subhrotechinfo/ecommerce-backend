@@ -1,159 +1,289 @@
-# Turborepo starter
+# 🛒 E-Commerce Backend — Turborepo Microservices
 
-This Turborepo starter is maintained by the Turborepo core team.
+A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker.
 
-## Using this example
+---
 
-Run the following command:
+## 📁 Project Structure
 
-```sh
-npx create-turbo@latest
+```
+ecommerce-baseline/
+├── apps/                        # (Reserved for future front-end apps)
+├── libs/                        # Shared libraries & utilities
+├── packages/                    # Shared packages (configs, types, etc.)
+├── services/
+│   ├── auth-service/            # Authentication & authorization microservice
+│   └── products/                # Product catalog microservice
+├── .dockerignore
+├── .env                         # Environment variables (local)
+├── .env.example                 # Environment variable template
+├── .gitignore
+├── .npmrc
+├── docker-compose.yaml          # Root-level multi-service orchestration
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml          # PNPM workspace config
+├── tsconfig.json                # Base TypeScript config
+├── tsconfig.copy.json
+└── turbo.json                   # Turborepo pipeline config
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 🧩 Services
 
-### Apps and Packages
+### 🔐 Auth Service (`services/auth-service`)
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+Handles all authentication and authorization concerns for the platform.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+**Responsibilities:**
 
-### Utilities
+- User registration and login
+- JWT token generation and validation
+- Password hashing and verification
+- Session/token management
 
-This Turborepo has some additional tools already setup for you:
+### 📦 Products Service (`services/products`)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Manages the product catalog for the e-commerce platform.
 
-### Build
+**Responsibilities:**
 
-To build all apps and packages, run the following command:
+- CRUD operations for products
+- Product listing and filtering
+- Inventory/stock management
+- Category management
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+---
 
-```sh
-cd my-turborepo
-turbo build
+## 🛠️ Tech Stack
+
+| Layer            | Technology                                         |
+| ---------------- | -------------------------------------------------- |
+| Runtime          | [Node.js](https://nodejs.org/)                     |
+| Framework        | [NestJS](https://nestjs.com/)                      |
+| Language         | TypeScript                                         |
+| Database         | [MongoDB](https://www.mongodb.com/)                |
+| Monorepo         | [Turborepo](https://turbo.build/repo)              |
+| Package Manager  | [PNPM](https://pnpm.io/)                           |
+| Containerization | [Docker](https://www.docker.com/) & Docker Compose |
+
+---
+
+## ⚙️ Prerequisites
+
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/) `>= 18.x`
+- [PNPM](https://pnpm.io/) `>= 8.x`
+- [Docker](https://www.docker.com/) & Docker Compose
+- [MongoDB](https://www.mongodb.com/) (or use the Docker Compose setup)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-org/ecommerce-baseline.git
+cd ecommerce-baseline
 ```
 
-Without global `turbo`, use your package manager:
+### 2. Install Dependencies
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+```bash
+pnpm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Configure Environment Variables
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+cp .env.example .env
 ```
 
-Without global `turbo`:
+Edit `.env` with your configuration values (MongoDB URI, JWT secrets, ports, etc.).
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+### 4. Run with Docker Compose (Recommended)
+
+Spin up all services and MongoDB with a single command:
+
+```bash
+docker-compose up --build
 ```
 
-### Develop
+This starts:
 
-To develop all apps and packages, run the following command:
+- `auth-service`
+- `products` service
+- MongoDB instance
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+### 5. Run in Development Mode (without Docker)
 
-```sh
-cd my-turborepo
-turbo dev
+Start all services in parallel using Turborepo:
+
+```bash
+pnpm dev
 ```
 
-Without global `turbo`, use your package manager:
+Or run a specific service:
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+```bash
+# Auth service only
+pnpm --filter auth-service dev
+
+# Products service only
+pnpm --filter products dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## 🏗️ Build
 
-```sh
-turbo dev --filter=web
+Build all services:
+
+```bash
+pnpm build
 ```
 
-Without global `turbo`:
+Build a specific service:
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+pnpm --filter auth-service build
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## 🧪 Testing
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Run tests across all services:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```bash
+pnpm test
 ```
 
-Without global `turbo`, use your package manager:
+Run tests for a specific service:
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
+```bash
+pnpm --filter auth-service test
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## 🐳 Docker
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Each service contains its own `Dockerfile`. The root `docker-compose.yaml` orchestrates all services together.
 
-```sh
-turbo link
+### Build Individual Service Image
+
+```bash
+# Auth service
+docker build -t auth-service ./services/auth-service
+
+# Products service
+docker build -t products-service ./services/products
 ```
 
-Without global `turbo`:
+### Start All Services
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
+```bash
+docker-compose up --build
 ```
 
-## Useful Links
+### Stop All Services
 
-Learn more about the power of Turborepo:
+```bash
+docker-compose down
+```
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+### Stop and Remove Volumes (resets DB)
+
+```bash
+docker-compose down -v
+```
+
+---
+
+## 🌍 Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values. Key variables include:
+
+| Variable                | Description                   |
+| ----------------------- | ----------------------------- |
+| `MONGODB_URI`           | MongoDB connection string     |
+| `JWT_SECRET`            | Secret key for JWT signing    |
+| `JWT_EXPIRES_IN`        | JWT token expiry duration     |
+| `AUTH_SERVICE_PORT`     | Port for the auth service     |
+| `PRODUCTS_SERVICE_PORT` | Port for the products service |
+
+> ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
+
+---
+
+## 📡 API Overview
+
+### Auth Service Endpoints
+
+| Method | Endpoint         | Description              |
+| ------ | ---------------- | ------------------------ |
+| `POST` | `/auth/register` | Register a new user      |
+| `POST` | `/auth/login`    | Login and receive JWT    |
+| `GET`  | `/auth/profile`  | Get current user profile |
+
+### Products Service Endpoints
+
+| Method   | Endpoint        | Description          |
+| -------- | --------------- | -------------------- |
+| `GET`    | `/products`     | List all products    |
+| `GET`    | `/products/:id` | Get a single product |
+| `POST`   | `/products`     | Create a new product |
+| `PATCH`  | `/products/:id` | Update a product     |
+| `DELETE` | `/products/:id` | Delete a product     |
+
+> Update these endpoints to match your actual route definitions.
+
+---
+
+## 🔄 Turborepo Pipelines
+
+Defined in `turbo.json`, the pipelines enable smart caching and parallel execution:
+
+```json
+{
+  "pipeline": {
+    "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
+    "dev": { "cache": false, "persistent": true },
+    "test": { "dependsOn": ["build"] },
+    "lint": {}
+  }
+}
+```
+
+---
+
+## 📦 Adding a New Service
+
+1. Create a new NestJS app under `services/`:
+   ```bash
+   nest new services/my-new-service
+   ```
+2. Add it to `pnpm-workspace.yaml` if not auto-detected.
+3. Add a `Dockerfile` inside the new service.
+4. Add the service to `docker-compose.yaml`.
+5. Add any shared packages to `libs/` or `packages/` as needed.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m 'feat: add my feature'`
+4. Push the branch: `git push origin feature/my-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).

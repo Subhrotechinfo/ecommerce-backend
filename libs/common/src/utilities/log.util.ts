@@ -3,6 +3,7 @@ import { INestApplication, LoggerService } from "@nestjs/common";
 import chalk from "chalk";
 import { WinstonModuleOptions } from "nest-winston";
 import { NodeEnv } from "../enums";
+import { Logger } from "nestjs-pino";
 
 // export function getWinstonConfig(
 //   appName: string,
@@ -67,7 +68,7 @@ import { NodeEnv } from "../enums";
 
 interface LogBootstrapOptions {
   nodeEnv: NodeEnv;
-  logger: LoggerService;
+  logger: Logger;
   appPort: number | string;
   tcpListener?: Record<string, any>;
 }

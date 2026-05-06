@@ -1,11 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { getAppConfig } from './config';
-import {
-  // getAppCommonConfig,
-  // getWinstonConfig,
-  // logBootstrapInfo,
-  setupSwagger,
-} from '@libs/common';
+import { setupSwagger } from '@libs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino/Logger';
 import { AuthModule } from './auth.module';

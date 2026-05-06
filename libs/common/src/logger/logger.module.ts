@@ -4,7 +4,6 @@ import { LoggerModule as PinoLoggerModule } from "nestjs-pino";
   imports: [
     PinoLoggerModule.forRoot({
       pinoHttp: {
-        name: "ProductService",
         transport: {
           target: "pino-pretty",
           options: {

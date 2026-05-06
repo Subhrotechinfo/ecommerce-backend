@@ -17,22 +17,13 @@ export class AuthService {
     };
 
     const expires = new Date();
-    console.log('tokenPayload', tokenPayload);
-    // console.log('JWT_EXPIRES_IN', process.env.JWT_EXPIRES_IN);
-    console.log(expires.getSeconds());
-
-    expires.setSeconds(85000);
-    console.log('Expires-------------------', expires);
-    try {
-      const token = this.jwtService.sign(tokenPayload, {
-        secret: 'NB4HZWKzpfvh7FEXZFmP4l0x0q7yGMhtwFR7VNEF518',
-      });
-      response.cookie('Authentication', token, {
-        httpOnly: true,
-        expires,
-      });
-    } catch (error) {
-      console.log('Auth service login error', error);
-    }
+    expires.setSeconds(expires.getSeconds() + getAppConfig().JWT_EXPIRES_IN);
+    const token = this.jwtService.sign(tokenPayload, {
+      secret: getAppConfig().JWT_SECRET,
+    });
+    response.cookie('Authentication', token, {
+      httpOnly: true,
+      expires,
+    });
   }
 }

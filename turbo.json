@@ -48,7 +48,13 @@
   ],
   "globalEnv": [
     "NODE_ENV",
-    "MONGODB_URI"
+    "AUTH_SERVICE_APP_PORT",
+    "AUTH_SERVICE_APP_NAME",
+    "PRODUCT_SERVICE_APP_PORT",
+    "PRODUCT_SERVICE_APP_NAME",
+    "MONGODB_URI",
+    "JWT_EXPIRES_IN",
+    "JWT_SECRET"
   ],
   "futureFlags": {
     "pruneIncludesGlobalFiles": true

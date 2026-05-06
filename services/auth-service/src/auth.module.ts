@@ -26,12 +26,12 @@ import { LocalStrategy } from './strategies/local.strategy';
     // }),
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: 36000 },
+        secret: getAppConfig().JWT_SECRET,
+        signOptions: { expiresIn: getAppConfig().JWT_EXPIRES_IN },
       }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

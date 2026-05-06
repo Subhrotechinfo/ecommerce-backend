@@ -3,15 +3,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { MicroserviceName } from '@libs/core';
 import { registerAs } from '@nestjs/config';
-import * as dotenv from 'dotenv';
-// import { MicroserviceName } from '@libs/core';
 
-dotenv.config();
+// dotenv.config();
 export const getAppConfig = () => ({
-  appName: process.env.AUTH_SERVICE_APP_NAME || 'Auth Service',
-  appPort: process.env.AUTH_SERVICE_APP_PORT || 5001,
+  appName: process.env.AUTH_SERVICE_APP_NAME,
+  appPort: process.env.AUTH_SERVICE_APP_PORT,
   microserviceName: MicroserviceName.AuthService,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '3600',
+  JWT_EXPIRES_IN: Number(process.env.JWT_EXPIRES_IN) || 36000,
+  JWT_SECRET: process.env.JWT_SECRET,
 });
+
+// export const getEnv = () => ({
+//   JWT_EXPIRES_IN: Number(process.env.JWT_EXPIRES_IN) || 36000,
+//   JWT_SECRET: process.env.JWT_SECRET,
+// });
 
 export const appConfiguration = registerAs('app', getAppConfig);

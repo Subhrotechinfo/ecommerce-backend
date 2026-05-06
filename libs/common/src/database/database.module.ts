@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
 import { ModelDefinition, MongooseModule } from "@nestjs/mongoose";
+import { getAppCommonConfig } from "../config";
 
 @Module({
   imports: [
     MongooseModule.forRootAsync({
       useFactory: () => ({
-        uri: process.env.MONGODB_URI,
+        uri: getAppCommonConfig().MONGODB_URI,
       }),
     }),
   ],
