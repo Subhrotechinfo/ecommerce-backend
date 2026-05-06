@@ -24,7 +24,6 @@ ecommerce-baseline/
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml          # PNPM workspace config
 ├── tsconfig.json                # Base TypeScript config
-├── tsconfig.copy.json
 └── turbo.json                   # Turborepo pipeline config
 ```
 
@@ -33,18 +32,22 @@ ecommerce-baseline/
 ## 🧩 Services
 
 ### 🔐 Auth Service (`services/auth-service`)
+
 Handles all authentication and authorization concerns for the platform.
 
 **Responsibilities:**
+
 - User registration and login
 - JWT token generation and validation
 - Password hashing and verification
 - Session/token management
 
 ### 📦 Products Service (`services/products`)
+
 Manages the product catalog for the e-commerce platform.
 
 **Responsibilities:**
+
 - CRUD operations for products
 - Product listing and filtering
 - Inventory/stock management
@@ -54,14 +57,14 @@ Manages the product catalog for the e-commerce platform.
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | [Node.js](https://nodejs.org/) |
-| Framework | [NestJS](https://nestjs.com/) |
-| Language | TypeScript |
-| Database | [MongoDB](https://www.mongodb.com/) |
-| Monorepo | [Turborepo](https://turbo.build/repo) |
-| Package Manager | [PNPM](https://pnpm.io/) |
+| Layer            | Technology                                         |
+| ---------------- | -------------------------------------------------- |
+| Runtime          | [Node.js](https://nodejs.org/)                     |
+| Framework        | [NestJS](https://nestjs.com/)                      |
+| Language         | TypeScript                                         |
+| Database         | [MongoDB](https://www.mongodb.com/)                |
+| Monorepo         | [Turborepo](https://turbo.build/repo)              |
+| Package Manager  | [PNPM](https://pnpm.io/)                           |
 | Containerization | [Docker](https://www.docker.com/) & Docker Compose |
 
 ---
@@ -109,6 +112,7 @@ docker-compose up --build
 ```
 
 This starts:
+
 - `auth-service`
 - `products` service
 - MongoDB instance
@@ -203,16 +207,16 @@ docker-compose down -v
 
 Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
-| Variable | Description |
-|---|---|
-| `NODE_ENV` | Runtime environment (`development`, `production`) |
-| `MONGODB_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret key for JWT signing |
-| `JWT_EXPIRES_IN` | JWT token expiry duration (e.g. `3600s`, `7d`) |
-| `AUTH_SERVICE_APP_PORT` | Port for the auth service |
-| `AUTH_SERVICE_APP_NAME` | Display name for the auth service |
-| `PRODUCT_SERVICE_APP_PORT` | Port for the products service |
-| `PRODUCT_SERVICE_APP_NAME` | Display name for the products service |
+| Variable                   | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| `NODE_ENV`                 | Runtime environment (`development`, `production`) |
+| `MONGODB_URI`              | MongoDB connection string                         |
+| `JWT_SECRET`               | Secret key for JWT signing                        |
+| `JWT_EXPIRES_IN`           | JWT token expiry duration (e.g. `3600s`, `7d`)    |
+| `AUTH_SERVICE_APP_PORT`    | Port for the auth service                         |
+| `AUTH_SERVICE_APP_NAME`    | Display name for the auth service                 |
+| `PRODUCT_SERVICE_APP_PORT` | Port for the products service                     |
+| `PRODUCT_SERVICE_APP_NAME` | Display name for the products service             |
 
 > ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
 
@@ -222,21 +226,21 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
 ### Auth Service Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/auth/register` | Register a new user |
-| `POST` | `/auth/login` | Login and receive JWT |
-| `GET` | `/auth/profile` | Get current user profile |
+| Method | Endpoint         | Description              |
+| ------ | ---------------- | ------------------------ |
+| `POST` | `/auth/register` | Register a new user      |
+| `POST` | `/auth/login`    | Login and receive JWT    |
+| `GET`  | `/auth/profile`  | Get current user profile |
 
 ### Products Service Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/products` | List all products |
-| `GET` | `/products/:id` | Get a single product |
-| `POST` | `/products` | Create a new product |
-| `PATCH` | `/products/:id` | Update a product |
-| `DELETE` | `/products/:id` | Delete a product |
+| Method   | Endpoint        | Description          |
+| -------- | --------------- | -------------------- |
+| `GET`    | `/products`     | List all products    |
+| `GET`    | `/products/:id` | Get a single product |
+| `POST`   | `/products`     | Create a new product |
+| `PATCH`  | `/products/:id` | Update a product     |
+| `DELETE` | `/products/:id` | Delete a product     |
 
 > Update these endpoints to match your actual route definitions.
 
@@ -246,14 +250,14 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
 Defined in `turbo.json`, the pipelines enable smart caching and parallel task execution across all services. The UI is set to `tui` (terminal UI) for a rich interactive output.
 
-| Task | Command | Description |
-|---|---|---|
-| `build` | `pnpm build` | Compiles all services; outputs to `dist/`. Depends on upstream builds (`^build`) |
-| `dev` | `pnpm dev` | Runs all services in watch mode. No cache, persistent process |
-| `start:dev` | `pnpm start:dev` | Starts services in dev mode; watches `.env*` files for changes |
-| `test` | `pnpm test` | Runs tests after build; outputs coverage to `coverage/` |
-| `lint` | `pnpm lint` | Lints all packages; respects upstream lint order (`^lint`) |
-| `check-types` | `pnpm check-types` | TypeScript type-checking across all services |
+| Task          | Command            | Description                                                                      |
+| ------------- | ------------------ | -------------------------------------------------------------------------------- |
+| `build`       | `pnpm build`       | Compiles all services; outputs to `dist/`. Depends on upstream builds (`^build`) |
+| `dev`         | `pnpm dev`         | Runs all services in watch mode. No cache, persistent process                    |
+| `start:dev`   | `pnpm start:dev`   | Starts services in dev mode; watches `.env*` files for changes                   |
+| `test`        | `pnpm test`        | Runs tests after build; outputs coverage to `coverage/`                          |
+| `lint`        | `pnpm lint`        | Lints all packages; respects upstream lint order (`^lint`)                       |
+| `check-types` | `pnpm check-types` | TypeScript type-checking across all services                                     |
 
 ### Global Dependencies
 

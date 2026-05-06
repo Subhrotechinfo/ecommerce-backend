@@ -4,15 +4,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
 import { getAppConfig } from './config';
-import { setupSwagger } from '@libs/common';
+import {
+  getAppCommonConfig,
+  logBootstrapInfo,
+  setupSwagger,
+} from '@libs/common';
 import { ProductsModule } from './products.module';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
-  // const { nodeEnv } = getAppCommonConfig();
-  // const log = new Logger(appName);
-
+  const { nodeEnv } = getAppCommonConfig();
   const app = await NestFactory.create(ProductsModule, { bufferLogs: true });
   //adding validation to the app
   //allow only whitelisted properties and forbid non-whitelisted properties
@@ -21,6 +23,9 @@ async function bootstrap() {
   setupSwagger(app, appName, ['/products-service']);
   await app.init();
   await app.listen(appPort);
-  // logBootstrapInfo(app);
+  logBootstrapInfo(app, {
+    nodeEnv,
+    appPort,
+  });
 }
 bootstrap();

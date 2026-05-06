@@ -1,9 +1,10 @@
 import * as winston from "winston";
-import { INestApplication, LoggerService } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import chalk from "chalk";
 import { WinstonModuleOptions } from "nest-winston";
 import { NodeEnv } from "../enums";
-import { Logger } from "nestjs-pino";
+import { Logger } from "nestjs-pino/Logger";
+// import { Logger } from "nestjs-pino";
 
 // export function getWinstonConfig(
 //   appName: string,
@@ -68,7 +69,6 @@ import { Logger } from "nestjs-pino";
 
 interface LogBootstrapOptions {
   nodeEnv: NodeEnv;
-  logger: Logger;
   appPort: number | string;
   tcpListener?: Record<string, any>;
 }
@@ -77,8 +77,8 @@ export function logBootstrapInfo(
   app: INestApplication,
   logOptions: LogBootstrapOptions,
 ): void {
-  const { tcpListener, nodeEnv, logger, appPort } = logOptions;
-
+  const { tcpListener, nodeEnv, appPort } = logOptions;
+  const logger = app.get(Logger);
   if (nodeEnv === NodeEnv.Production) {
     logger.log({
       message: `Application is running on port ${appPort}`,
@@ -103,7 +103,6 @@ export function logBootstrapInfo(
       context: "NestMicroservice",
     });
   }
-
   logger.log({
     message: `Microservice Application is ready. View Swagger at http://${host}:${appPort}/swagger`,
     context: "Application",
