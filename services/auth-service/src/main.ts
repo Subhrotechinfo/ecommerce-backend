@@ -8,10 +8,12 @@ import {
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino/Logger';
 import { AuthModule } from './auth.module';
+import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const { appName, appPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   const app = await NestFactory.create(AuthModule, { bufferLogs: true });
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   setupSwagger(app, appName, ['/auth-service']);

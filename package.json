@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/node": "^25.6.0",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
@@ -33,6 +34,7 @@
     "@nestjs/swagger": "^11.4.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "joi": "^18.2.1",
     "nest-winston": "^1.10.2",
     "nestjs-pino": "^4.6.1",
