@@ -50,11 +50,14 @@
     "NODE_ENV",
     "AUTH_SERVICE_APP_PORT",
     "AUTH_SERVICE_APP_NAME",
+    "AUTH_SERVICE_TCP_PORT",
     "PRODUCT_SERVICE_APP_PORT",
     "PRODUCT_SERVICE_APP_NAME",
     "MONGODB_URI",
     "JWT_EXPIRES_IN",
-    "JWT_SECRET"
+    "JWT_SECRET",
+    "AUTH_HOST",
+    "AUTH_TCP_PORT"
   ],
   "futureFlags": {
     "pruneIncludesGlobalFiles": true

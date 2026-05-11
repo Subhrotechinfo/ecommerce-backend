@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/require-await */
 import { Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -16,18 +17,13 @@ export class AuthController {
     @CurrentUser() user: UserDocument,
     @Res({ passthrough: true }) response: Response,
   ) {
-    try {
-      await this.authService.login(user, response);
-      response.send(user);
-    } catch (error) {
-      console.log('Auth controller login error', error);
-    }
+    await this.authService.login(user, response);
+    response.send(user);
   }
 
   @UseGuards(JwtAuthGuard)
   @MessagePattern('authenticate')
   async authenticate(@Payload() data: any) {
-    console.log('Data received in auth controller for authentication: ', data);
     return data.user;
   }
 }

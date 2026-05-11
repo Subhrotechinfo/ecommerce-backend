@@ -25,9 +25,8 @@ services:
       - .env
     ports:
       - '5001:5001'
-      # - '5002:5002'
     expose:
-      - "5002"
+      - '5002' #TCP port
     volumes:
       - .:/usr/src/app
   mongo:

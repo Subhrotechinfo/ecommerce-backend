@@ -18,35 +18,33 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    try {
-      return this.productsService.create(createProductDto);
-    } catch (error) {
-      console.log('Product Service - error', error);
-    }
+  async create(
+    @Body() createProductDto: CreateProductDto /*@CurrentUser() user: UserDto*/,
+  ) {
+    return this.productsService.create(createProductDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
+  async findAll() {
     return this.productsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    try {
-      return this.productsService.update(id, updateProductDto);
-    } catch (error) {
-      console.log(error);
-    }
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
 }

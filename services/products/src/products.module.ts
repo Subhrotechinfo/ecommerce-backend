@@ -32,22 +32,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         useFactory: () => ({
           transport: Transport.TCP,
           options: {
-            host: 'auth-service',
-            port: 5002,
+            host: getAppConfig().authHost,
+            port: Number(getAppConfig().authTcpPort),
           },
         }),
       },
     ]),
-    // ClientsModule.register([
-    //   {
-    //     name: AUTH_SERVICE,
-    //     transport: Transport.TCP,
-    //     options: {
-    //       host: 'auth-service',
-    //       port: 5003,
-    //     },
-    //   },
-    // ]),
   ],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],

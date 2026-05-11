@@ -6,10 +6,10 @@ import { registerAs } from '@nestjs/config';
 
 export const getAppConfig = () => ({
   appName: process.env.PRODUCT_SERVICE_APP_NAME || 'Product Service',
-  httpPort: process.env.PRODUCT_SERVICE_APP_PORT || 5002,
+  httpPort: process.env.PRODUCT_SERVICE_APP_PORT || 5000,
   microserviceName: MicroserviceName.ProductService,
   authHost: process.env.AUTH_HOST,
-  authPort: process.env.AUTH_PORT,
+  authTcpPort: process.env.AUTH_TCP_PORT,
 });
 
 export const appConfiguration = registerAs('app', getAppConfig);
