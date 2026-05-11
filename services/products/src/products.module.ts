@@ -3,13 +3,14 @@
 import { Module } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
-import { DatabaseModule, LoggerModule } from '@libs/common';
+import { AUTH_SERVICE, DatabaseModule, LoggerModule } from '@libs/common';
 import { ProductsRepository } from './products.repository';
 import {
   ProductDocument,
   ProductSchema,
 } from './products/models/product.schema';
 import { getAppConfig } from './config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 // import { ConfigModule } from '@nestjs/config';
 // import * as Joi from 'joi';
 @Module({
@@ -25,6 +26,28 @@ import { getAppConfig } from './config';
     //     MONGODB_URI: Joi.string().required(),
     //   }),
     // }),
+    ClientsModule.registerAsync([
+      {
+        name: AUTH_SERVICE,
+        useFactory: () => ({
+          transport: Transport.TCP,
+          options: {
+            host: 'auth-service',
+            port: 5002,
+          },
+        }),
+      },
+    ]),
+    // ClientsModule.register([
+    //   {
+    //     name: AUTH_SERVICE,
+    //     transport: Transport.TCP,
+    //     options: {
+    //       host: 'auth-service',
+    //       port: 5003,
+    //     },
+    //   },
+    // ]),
   ],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],

@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { getAppConfig } from '@/config';
 import { TokenPayload } from '@/interfaces/token-payload.interface';
 import { UsersService } from '@/users/users.service';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -11,7 +11,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => request?.cookies?.Authentication,
+        (request: any) => {
+          return (
+            request?.cookies?.Authentication ||
+            request?.Authentication ||
+            request?.headers.Authentication
+          );
+        },
       ]),
       secretOrKey: getAppConfig().JWT_SECRET,
     });

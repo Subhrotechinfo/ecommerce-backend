@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { UserDocument } from '../users/models/user.schema';
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
+import { UserDocument } from "../models/user.schema";
 
 const getCurrentUserByContext = (context: ExecutionContext): UserDocument => {
   return context.switchToHttp().getRequest().user;

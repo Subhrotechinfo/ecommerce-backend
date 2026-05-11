@@ -7,7 +7,8 @@ import { registerAs } from '@nestjs/config';
 // dotenv.config();
 export const getAppConfig = () => ({
   appName: process.env.AUTH_SERVICE_APP_NAME,
-  appPort: process.env.AUTH_SERVICE_APP_PORT,
+  httpPort: process.env.AUTH_SERVICE_APP_PORT,
+  tcpPort: process.env.AUTH_SERVICE_TCP_PORT,
   microserviceName: MicroserviceName.AuthService,
   JWT_EXPIRES_IN: Number(process.env.JWT_EXPIRES_IN) || 36000,
   JWT_SECRET: process.env.JWT_SECRET,

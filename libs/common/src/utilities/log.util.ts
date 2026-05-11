@@ -69,7 +69,7 @@ import { Logger } from "nestjs-pino/Logger";
 
 interface LogBootstrapOptions {
   nodeEnv: NodeEnv;
-  appPort: number | string;
+  httpPort: number | string;
   tcpListener?: Record<string, any>;
 }
 
@@ -77,11 +77,11 @@ export function logBootstrapInfo(
   app: INestApplication,
   logOptions: LogBootstrapOptions,
 ): void {
-  const { tcpListener, nodeEnv, appPort } = logOptions;
+  const { tcpListener, nodeEnv, httpPort } = logOptions;
   const logger = app.get(Logger);
   if (nodeEnv === NodeEnv.Production) {
     logger.log({
-      message: `Application is running on port ${appPort}`,
+      message: `Application is running on port ${httpPort}`,
       context: "Application",
     });
     return;
@@ -104,7 +104,7 @@ export function logBootstrapInfo(
     });
   }
   logger.log({
-    message: `Microservice Application is ready. View Swagger at http://${host}:${appPort}/swagger`,
+    message: `Microservice Application is ready. View Swagger at http://${host}:${httpPort}/swagger`,
     context: "Application",
   });
 }

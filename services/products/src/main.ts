@@ -12,20 +12,24 @@ import {
 import { ProductsModule } from './products.module';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
+import cookieParser from 'cookie-parser';
+
 async function bootstrap() {
-  const { appName, appPort } = getAppConfig();
+  const { appName, httpPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   const app = await NestFactory.create(ProductsModule, { bufferLogs: true });
+  app.use(cookieParser());
+
   //adding validation to the app
   //allow only whitelisted properties and forbid non-whitelisted properties
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   setupSwagger(app, appName, ['/products-service']);
   await app.init();
-  await app.listen(appPort);
+  await app.listen(httpPort);
   logBootstrapInfo(app, {
     nodeEnv,
-    appPort,
+    httpPort,
   });
 }
 bootstrap();
