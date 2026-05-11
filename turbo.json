@@ -59,7 +59,9 @@
     "AUTH_HOST",
     "AUTH_TCP_PORT",
     "PAYMENTS_SERVICE_APP_NAME",
-    "PAYMENTS_SERVICE_APP_PORT"
+    "PAYMENTS_SERVICE_APP_PORT",
+    "PAYMENTS_TCP_PORT",
+    "STRIPE_SECRET_KEY"
   ],
   "futureFlags": {
     "pruneIncludesGlobalFiles": true
