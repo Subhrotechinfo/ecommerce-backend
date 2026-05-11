@@ -29,5 +29,18 @@ services:
       - '5002' #TCP port
     volumes:
       - .:/usr/src/app
+  payments-service:
+    build:
+      context: .
+      dockerfile: ./services/payments-service/Dockerfile
+      target: runner
+    command: pnpm run dev
+    container_name: Payments_Service
+    env_file:
+      - ./services/payments-service/.env
+    ports:
+      - '5004:5004'
+    volumes:
+      - .:/usr/src/app
   mongo:
     image: mongo

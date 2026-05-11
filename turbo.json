@@ -57,7 +57,9 @@
     "JWT_EXPIRES_IN",
     "JWT_SECRET",
     "AUTH_HOST",
-    "AUTH_TCP_PORT"
+    "AUTH_TCP_PORT",
+    "PAYMENTS_SERVICE_APP_NAME",
+    "PAYMENTS_SERVICE_APP_PORT"
   ],
   "futureFlags": {
     "pruneIncludesGlobalFiles": true
