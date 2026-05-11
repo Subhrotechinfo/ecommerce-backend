@@ -16,26 +16,29 @@ import { JwtAuthGuard } from '@libs/common';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-  @UseGuards(JwtAuthGuard)
+
   @Post()
+  @UseGuards(JwtAuthGuard)
   async create(
     @Body() createProductDto: CreateProductDto /*@CurrentUser() user: UserDto*/,
   ) {
     return this.productsService.create(createProductDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.productsService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -44,6 +47,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
