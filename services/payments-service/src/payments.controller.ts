@@ -5,10 +5,10 @@ import { MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService) { }
 
   @MessagePattern('create_charge')
   async createCharge() {
-    return this.paymentsService.createPayments();
+    return this.paymentsService.createCharge();
   }
 }

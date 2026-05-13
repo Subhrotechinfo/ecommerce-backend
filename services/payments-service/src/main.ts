@@ -29,7 +29,6 @@ async function bootstrap() {
   setupSwagger(app, appName, ['/payments-services']);
   await app.startAllMicroservices();
   await app.listen(httpPort);
-  console.log('Nodeenv Payments ***********************', nodeEnv, httpPort);
   logBootstrapInfo(app, {
     nodeEnv,
     httpPort,

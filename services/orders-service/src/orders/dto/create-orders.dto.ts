@@ -4,10 +4,8 @@ export class CreateOrdersDto {
   @IsString()
   order_id: string;
 
-  @IsString()
   user_id: string;
 
-  @IsString()
   email: string;
 
   @IsString()

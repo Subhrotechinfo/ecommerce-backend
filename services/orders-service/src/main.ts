@@ -16,13 +16,14 @@ async function bootstrap() {
   const { appName, httpPort, ordersTcpPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   const app = await NestFactory.create(OrdersModule, { bufferLogs: true });
-  app.connectMicroservice({
-    transport: Transport.TCP,
-    options: {
-      host: '0.0.0.0',
-      port: ordersTcpPort,
-    },
-  });
+  //configure this when required now making this stand alone
+  // app.connectMicroservice({
+  //   transport: Transport.TCP,
+  //   options: {
+  //     host: '0.0.0.0',
+  //     port: ordersTcpPort,
+  //   },
+  // });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
