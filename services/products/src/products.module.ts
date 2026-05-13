@@ -3,7 +3,12 @@
 import { Module } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
-import { AUTH_SERVICE, DatabaseModule, LoggerModule } from '@libs/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  LoggerModule,
+  PAYMENTS_SERVICE,
+} from '@libs/common';
 import { ProductsRepository } from './products.repository';
 import {
   ProductDocument,
@@ -34,6 +39,16 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           options: {
             host: getAppConfig().authHost,
             port: Number(getAppConfig().authTcpPort),
+          },
+        }),
+      },
+      {
+        name: PAYMENTS_SERVICE,
+        useFactory: () => ({
+          transport: Transport.TCP,
+          options: {
+            host: getAppConfig().paymentsHost,
+            port: Number(getAppConfig().paymentsTcpPort),
           },
         }),
       },

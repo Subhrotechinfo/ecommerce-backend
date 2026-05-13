@@ -6,21 +6,21 @@ import { ProductsRepository } from './products.repository';
 @Injectable()
 export class ProductsService {
   constructor(private readonly productRepository: ProductsRepository) {}
-  create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto) {
     return this.productRepository.create({
       ...createProductDto,
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.productRepository.find({});
   }
 
-  findOne(_id: string) {
+  async findOne(_id: string) {
     return this.productRepository.findOne({ _id });
   }
 
-  update(_id: string, updateProductDto: UpdateProductDto) {
+  async update(_id: string, updateProductDto: UpdateProductDto) {
     return this.productRepository.findOneAndUpdate(
       { _id },
       { $set: updateProductDto },

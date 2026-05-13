@@ -31,6 +31,7 @@
   "dependencies": {
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/microservices": "^11.1.19",
+    "@nestjs/mongoose": "^11.0.4",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/swagger": "^11.4.2",
     "class-transformer": "^0.5.1",

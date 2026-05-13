@@ -44,5 +44,21 @@ services:
       - '5004' #TCP port
     volumes:
       - .:/usr/src/app
+
+  orders-service:
+    build:
+      context: .
+      dockerfile: ./services/orders-service/Dockerfile
+      target: runner
+    command: pnpm run dev
+    container_name: Orders_Service
+    env_file:
+      - ./services/orders-service/.env
+    ports:
+      - '5005:5005'
+    expose:
+      - '5006' #TCP port
+    volumes:
+      - .:/usr/src/app
   mongo:
     image: mongo

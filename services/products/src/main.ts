@@ -27,9 +27,14 @@ async function bootstrap() {
   setupSwagger(app, appName, ['/products-service']);
   await app.init();
   await app.listen(httpPort);
-  logBootstrapInfo(app, {
-    nodeEnv,
-    httpPort,
-  });
+  console.log('Nodeenv Product ***********************', nodeEnv, httpPort);
+  try {
+    logBootstrapInfo(app, {
+      nodeEnv,
+      httpPort,
+    });
+  } catch (error) {
+    console.log('Product error bootstrap', error);
+  }
 }
 bootstrap();

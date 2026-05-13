@@ -10,26 +10,25 @@ import { Logger } from 'nestjs-pino/Logger';
 
 import cookieParser from 'cookie-parser';
 
-import { PaymentsModule } from './payments.module';
 import { Transport } from '@nestjs/microservices';
+import { OrdersModule } from './orders.module';
 async function bootstrap() {
-  const { appName, httpPort, paymentsTcpPort } = getAppConfig();
+  const { appName, httpPort, ordersTcpPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
-  const app = await NestFactory.create(PaymentsModule, { bufferLogs: true });
+  const app = await NestFactory.create(OrdersModule, { bufferLogs: true });
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: paymentsTcpPort,
+      port: ordersTcpPort,
     },
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
-  setupSwagger(app, appName, ['/payments-services']);
-  await app.startAllMicroservices();
+  setupSwagger(app, appName, ['/orders-services']);
+  // await app.startAllMicroservices();
   await app.listen(httpPort);
-  console.log('Nodeenv Payments ***********************', nodeEnv, httpPort);
   logBootstrapInfo(app, {
     nodeEnv,
     httpPort,
