@@ -9,18 +9,32 @@ import { CreateChargeDto } from '@libs/common';
 export class PaymentsService {
   private readonly stripe = new Stripe(getAppConfig().stripeSecretKey);
 
-  async createCharge({ card, amount }: CreateChargeDto): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async createCharge(data): Promise<any> {
+    const customer = await this.stripe.customers.create({
+      name: 'Jenny Rosen',
+      email: data.user.email,
+    });
+    console.log('Customer', customer);
+    const customerSource = await this.stripe.customers.createSource(
+      customer.id,
+      {
+        source: 'tok_visa',
+      },
+    );
+    console.log('customerSource', customerSource);
     const paymentMethod = await this.stripe.paymentMethods.create({
       type: 'card',
-      card,
+      card: customerSource
     });
     const paymentIntent = await this.stripe.paymentIntents.create({
       payment_method: paymentMethod.id,
-      amount: amount * 100,
+      amount: data.charge.amount * 100,
       confirm: true,
       payment_method_types: ['card'],
       currency: 'usd',
     });
-    return paymentIntent;
+    console.log('Payments intent-', paymentIntent);
+    // return paymentIntent;
   }
 }

@@ -24,6 +24,8 @@ async function bootstrap() {
   //     port: ordersTcpPort,
   //   },
   // });
+  console.log('getAppConfig().paymentsHost', getAppConfig().paymentsHost);
+  console.log('getAppConfig().paymentsHost', getAppConfig().paymentsTcpPort);
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));

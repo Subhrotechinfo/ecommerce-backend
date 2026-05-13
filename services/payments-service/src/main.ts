@@ -23,6 +23,7 @@ async function bootstrap() {
       port: paymentsTcpPort,
     },
   });
+
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));

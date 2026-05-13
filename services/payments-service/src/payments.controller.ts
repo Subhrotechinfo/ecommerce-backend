@@ -10,7 +10,10 @@ export class PaymentsController {
 
   @MessagePattern('create_charge')
   @UsePipes(new ValidationPipe())
-  async createCharge(@Payload() data: CreateChargeDto) {
-    return this.paymentsService.createCharge(data);
+  createCharge(@Payload() data) {
+    // console.log('catched the data here', data);
+    const payment = this.paymentsService.createCharge(data);
+    console.log('Payments log', payment);
+    return payment;
   }
 }
