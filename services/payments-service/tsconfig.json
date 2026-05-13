@@ -37,7 +37,8 @@
     }
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "../../libs/common/src/dto/create-charge.dto.ts"
   ],
   "references": [
     {

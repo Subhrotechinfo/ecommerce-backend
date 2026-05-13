@@ -1,4 +1,11 @@
-import { IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmptyObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { CreateChargeDto } from '@libs/common';
+import { Type } from 'class-transformer';
 
 export class CreateOrdersDto {
   @IsString()
@@ -27,4 +34,10 @@ export class CreateOrdersDto {
   status: string;
 
   createdAt: Date;
+
+  @IsDefined()
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => CreateChargeDto)
+  charge: CreateChargeDto;
 }
