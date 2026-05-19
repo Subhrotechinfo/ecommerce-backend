@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -7,6 +8,7 @@ import { OrdersRepository } from './orders.repository';
 import { CreateOrdersDto } from './orders/dto/create-orders.dto';
 import { PAYMENTS_SERVICE } from '@libs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { map } from 'rxjs';
 
 @Injectable()
 export class OrdersService {
@@ -16,23 +18,22 @@ export class OrdersService {
   ) {}
   async create(createOrdersDto: CreateOrdersDto, user) {
     try {
-      const orderCreated = await this.ordersRepository.create({
-        ...createOrdersDto,
-        user_id: user._id,
-        email: user.email,
-      });
-      const data = {
+      const createCharges = {
         orderDetails: createOrdersDto,
         user: user,
       };
-      console.log('*********************', orderCreated);
-      this.paymentsService
-        .send('create_charge', data)
-        .subscribe(async (response) => {
-          console.log('Response order payment', response);
-        });
+      return this.paymentsService.send('create_charge', createCharges).pipe(
+        map(() => {
+          // console.log('Response order payment', response);
+          return this.ordersRepository.create({
+            ...createOrdersDto,
+            user_id: user._id,
+            email: user.email,
+          });
+        }),
+      );
     } catch (error) {
-      console.log('Response - Order Error*************', error);
+      console.log('Response - Order Service Error*************', error);
     }
   }
   async findAll() {

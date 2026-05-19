@@ -16,56 +16,86 @@ export class PaymentsService {
       email: data.user.email,
     });
     console.log('Customer', customer);
-    const customerSource = await this.stripe.customers.createSource(
-      customer.id,
-      {
-        source: 'tok_visa',
-      },
-    );
-    console.log('customerSource', customerSource);
 
-    // const cardToken = {
-    //   id: 'card_1MvoiELkdIwHu7ixOeFGbN9D',
-    //   object: 'card',
-    //   address_city: null,
-    //   address_country: null,
-    //   address_line1: null,
-    //   address_line1_check: null,
-    //   address_line2: null,
-    //   address_state: null,
-    //   address_zip: null,
-    //   address_zip_check: null,
-    //   brand: 'Visa',
-    //   country: 'US',
-    //   customer: 'cus_NhD8HD2bY8dP3V',
-    //   cvc_check: null,
-    //   dynamic_last4: null,
-    //   exp_month: 4,
-    //   exp_year: 2024,
-    //   fingerprint: 'mToisGZ01V71BCos',
-    //   funding: 'credit',
-    //   last4: '4242',
-    //   metadata: {},
-    //   name: null,
-    //   tokenization_method: null,
-    //   wallet: null,
-    // };
+    // const customerSource = await this.stripe.customers.createSource(
+    //   customer.id,
+    //   {
+    //     source: 'tok_visa',
+    //   },
+    // );
+    // console.log('customerSource', customerSource);
+
+    // const token = await this.stripe.tokens.create({
+    //   card: {
+    //     number: '4242424242424242',
+    //     exp_month: '5',
+    //     exp_year: '2026',
+    //     cvc: '314',
+    //   },
+    // });
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
-    //   card: cardToken,
+    //   card: token,
     // });
     // console.log('payment method', paymentMethod);
 
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: 500,
-      currency: 'gbp',
-      payment_method: 'pm_card_in',
+      currency: 'usd',
+      payment_method: 'pm_card_visa', //'pm_card_in',
       payment_method_types: ['card'],
       customer: customer.id,
       receipt_email: data.user.email,
+      confirm: true,
     });
 
     console.log('Payments intent-', paymentIntent);
+    const paymentIntentConfirm = await this.stripe.paymentIntents.confirm(
+      paymentIntent.id,
+      {
+        payment_method: 'pm_card_visa',
+        return_url: 'https://www.example.com', //change this to order complete page
+      },
+    );
+    console.log(
+      'paymentIntentConfirm-',
+      paymentIntentConfirm,
+      '******************************************',
+    );
     return paymentIntent;
+  }
+  //update the customer data here
+  async createCheckoutSession() {
+    const session = await this.stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Node.js and Express book',
+            },
+            unit_amount: 50 * 100,
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'JavaScript T-Shirt',
+            },
+            unit_amount: 20 * 100,
+          },
+          quantity: 2,
+        },
+      ],
+      mode: 'payment',
+      shipping_address_collection: {
+        allowed_countries: ['US', 'BR'],
+      },
+      success_url: `https://www.example.com/success`,             //update this  
+      cancel_url: `https://www.example.com/cancel`,               //update this 
+    });
+    return session.url;
   }
 }
