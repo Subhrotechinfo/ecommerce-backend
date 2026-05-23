@@ -10,7 +10,10 @@ import { ClientProxy } from '@nestjs/microservices';
 @Injectable()
 export class PaymentsService {
   private readonly stripe = new Stripe(getAppConfig().stripeSecretKey);
-  constructor(@Inject(NOTIFICATION_SERVICE) private readonly notificationService: ClientProxy) { }
+  constructor(
+    @Inject(NOTIFICATION_SERVICE)
+    private readonly notificationService: ClientProxy,
+  ) {}
   async createCharge(data): Promise<any> {
     const customer = await this.stripe.customers.create({
       name: 'Jenny Rosen', //change this to dynamic
@@ -41,7 +44,7 @@ export class PaymentsService {
     // console.log('payment method', paymentMethod);
 
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: 500,
+      amount: 5000,
       currency: 'usd',
       payment_method: 'pm_card_visa', //'pm_card_in',
       payment_method_types: ['card'],
@@ -51,18 +54,6 @@ export class PaymentsService {
     });
 
     console.log('Payments intent-', paymentIntent);
-    const paymentIntentConfirm = await this.stripe.paymentIntents.confirm(
-      paymentIntent.id,
-      {
-        payment_method: 'pm_card_visa',
-        return_url: 'https://www.example.com', //change this to order complete page
-      },
-    );
-    console.log(
-      'paymentIntentConfirm-',
-      paymentIntentConfirm,
-      '******************************************',
-    );
     //send the notification to the user
     this.notificationService.emit('notify_email', { email: data.user.email });
 
@@ -77,7 +68,7 @@ export class PaymentsService {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Node.js and Express book',
+              name: 'Node.js and Express bookss',
             },
             unit_amount: 50 * 100,
           },
