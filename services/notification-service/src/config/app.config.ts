@@ -5,12 +5,9 @@ import { MicroserviceName } from '@libs/core';
 import { registerAs } from '@nestjs/config';
 
 export const getAppConfig = () => ({
-  appName: process.env.PAYMENTS_SERVICE_APP_NAME || 'Payments Service',
-  httpPort: process.env.PAYMENTS_SERVICE_APP_PORT || 5003,
-  microserviceName: MicroserviceName.PaymentsService,
-  paymentsTcpPort: process.env.PAYMENTS_TCP_PORT,
-  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-  notificationHost: process.env.NOTIFICATION_HOST,
+  appName: process.env.NOTIFICATION_SERVICE_APP_NAME || 'Notification Service',
+  httpPort: process.env.NOTIFICATION_SERVICE_APP_PORT || 5007,
+  microserviceName: MicroserviceName.NotificationService,
   notificationTcpPort: process.env.NOTIFICATION_TCP_PORT,
 });
 

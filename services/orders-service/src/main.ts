@@ -7,13 +7,10 @@ import {
 } from '@libs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino/Logger';
-
 import cookieParser from 'cookie-parser';
-
-import { Transport } from '@nestjs/microservices';
 import { OrdersModule } from './orders.module';
 async function bootstrap() {
-  const { appName, httpPort, ordersTcpPort } = getAppConfig();
+  const { appName, httpPort } = getAppConfig();
   const { nodeEnv } = getAppCommonConfig();
   const app = await NestFactory.create(OrdersModule, { bufferLogs: true });
   //configure this when required now making this stand alone

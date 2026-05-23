@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 import { CreateOrdersDto } from './orders/dto/create-orders.dto';
-import { PAYMENTS_SERVICE } from '@libs/common';
+import { PAYMENTS_SERVICE, UserDto } from '@libs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { map } from 'rxjs';
 
@@ -15,20 +15,20 @@ export class OrdersService {
   constructor(
     private readonly ordersRepository: OrdersRepository,
     @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
-  ) {}
-  async create(createOrdersDto: CreateOrdersDto, user) {
+  ) { }
+  async create(createOrdersDto: CreateOrdersDto, { email, _id }: UserDto) {
     try {
       const createCharges = {
         orderDetails: createOrdersDto,
-        user: user,
+        user: { email, _id },
       };
       return this.paymentsService.send('create_charge', createCharges).pipe(
         map(() => {
           // console.log('Response order payment', response);
           return this.ordersRepository.create({
             ...createOrdersDto,
-            user_id: user._id,
-            email: user.email,
+            user_id: _id,
+            email: email,
           });
         }),
       );

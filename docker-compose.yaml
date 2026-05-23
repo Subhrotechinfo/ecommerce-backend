@@ -18,6 +18,8 @@ services:
       context: .
       dockerfile: ./services/auth-service/Dockerfile
       target: runner
+    # mem_limit: 1g
+    # memswap_limit: 2g
     command: pnpm run dev
     container_name: Auth_Service
     env_file:
@@ -34,6 +36,8 @@ services:
       context: .
       dockerfile: ./services/payments-service/Dockerfile
       target: runner
+    # mem_limit: 1g
+    # memswap_limit: 2g
     command: pnpm run dev
     container_name: Payments_Service
     env_file:
@@ -50,6 +54,8 @@ services:
       context: .
       dockerfile: ./services/orders-service/Dockerfile
       target: runner
+    # mem_limit: 1g
+    # memswap_limit: 2g
     command: pnpm run dev
     container_name: Orders_Service
     env_file:
@@ -60,5 +66,24 @@ services:
       - '5006' #TCP port
     volumes:
       - .:/usr/src/app
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./services/notification-service/Dockerfile
+      target: runner
+    # mem_limit: 1g
+    # memswap_limit: 2g
+    command: pnpm run dev
+    container_name: Notification_Service
+    env_file:
+      - ./services/notification-service/.env
+    ports:
+      - '5007:5007' #no need to expose the port if connected with TCP
+    expose:
+      - '5008' #TCP port
+    volumes:
+      - .:/usr/src/app
+
   mongo:
     image: mongo
