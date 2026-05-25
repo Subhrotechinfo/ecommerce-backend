@@ -38,3 +38,7 @@ yarn-error.log*
 .DS_Store
 *.pem
 node_modules
+.pnpm-store/
+.pnpm-store
+# Local env files
+.env
