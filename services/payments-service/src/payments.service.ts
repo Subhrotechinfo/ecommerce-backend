@@ -10,11 +10,14 @@ import { ClientProxy } from '@nestjs/microservices';
 @Injectable()
 export class PaymentsService {
   private readonly stripe = new Stripe(getAppConfig().stripeSecretKey);
-  constructor(@Inject(NOTIFICATION_SERVICE) private readonly notificationService: ClientProxy) { }
+  constructor(
+    @Inject(NOTIFICATION_SERVICE)
+    private readonly notificationService: ClientProxy,
+  ) {}
   async createCharge(data): Promise<any> {
     const customer = await this.stripe.customers.create({
       name: 'Jenny Rosen', //change this to dynamic
-      email: data.user.email,
+      email: data.email,
     });
     console.log('Customer', customer);
 
@@ -41,12 +44,12 @@ export class PaymentsService {
     // console.log('payment method', paymentMethod);
 
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: 500,
+      amount: data.charge.amount,
       currency: 'usd',
       payment_method: 'pm_card_visa', //'pm_card_in',
       payment_method_types: ['card'],
       customer: customer.id,
-      receipt_email: data.user.email,
+      receipt_email: data.email,
       confirm: true,
     });
 
@@ -64,7 +67,7 @@ export class PaymentsService {
       '******************************************',
     );
     //send the notification to the user
-    this.notificationService.emit('notify_email', { email: data.user.email });
+    this.notificationService.emit('notify_email', { email: data.email });
 
     return paymentIntent;
   }

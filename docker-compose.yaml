@@ -4,14 +4,14 @@ services:
       context: .
       dockerfile: ./services/products/Dockerfile
       target: runner
-    command: pnpm run dev
+    command: pnpm --filter products run start:dev
     container_name: Products_Service
     env_file:
       - ./services/products/.env
     ports:
       - '5000:5000'
     volumes:
-      - .:/usr/src/app
+      - .:/app
 
   auth-service:
     build:
@@ -20,7 +20,7 @@ services:
       target: runner
     # mem_limit: 1g
     # memswap_limit: 2g
-    command: pnpm run dev
+    command: pnpm --filter auth-service run start:dev
     container_name: Auth_Service
     env_file:
       - ./services/auth-service/.env
@@ -30,7 +30,7 @@ services:
     expose:
       - '5002' #TCP port
     volumes:
-      - .:/usr/src/app
+      - .:/app
   payments-service:
     build:
       context: .
@@ -38,7 +38,7 @@ services:
       target: runner
     # mem_limit: 1g
     # memswap_limit: 2g
-    command: pnpm run dev
+    command: pnpm --filter payments-service run start:dev
     container_name: Payments_Service
     env_file:
       - ./services/payments-service/.env
@@ -47,7 +47,7 @@ services:
     expose:
       - '5004' #TCP port
     volumes:
-      - .:/usr/src/app
+      - .:/app
 
   orders-service:
     build:
@@ -56,7 +56,7 @@ services:
       target: runner
     # mem_limit: 1g
     # memswap_limit: 2g
-    command: pnpm run dev
+    command: pnpm --filter orders-service run start:dev
     container_name: Orders_Service
     env_file:
       - ./services/orders-service/.env
@@ -65,7 +65,7 @@ services:
     expose:
       - '5006' #TCP port
     volumes:
-      - .:/usr/src/app
+      - .:/app
 
   notification-service:
     build:
@@ -74,7 +74,7 @@ services:
       target: runner
     # mem_limit: 1g
     # memswap_limit: 2g
-    command: pnpm run dev
+    command: pnpm --filter notification-service run start:dev
     container_name: Notification_Service
     env_file:
       - ./services/notification-service/.env
@@ -83,7 +83,7 @@ services:
     expose:
       - '5008' #TCP port
     volumes:
-      - .:/usr/src/app
+      - .:/app
 
   mongo:
     image: mongo

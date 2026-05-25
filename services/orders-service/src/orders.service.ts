@@ -15,12 +15,14 @@ export class OrdersService {
   constructor(
     private readonly ordersRepository: OrdersRepository,
     @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
-  ) { }
+  ) {}
   async create(createOrdersDto: CreateOrdersDto, { email, _id }: UserDto) {
     try {
       const createCharges = {
-        orderDetails: createOrdersDto,
-        user: { email, _id },
+        ...createOrdersDto,
+        userId: _id,
+        email: email,
+        // user: { email, _id },
       };
       return this.paymentsService.send('create_charge', createCharges).pipe(
         map(() => {
