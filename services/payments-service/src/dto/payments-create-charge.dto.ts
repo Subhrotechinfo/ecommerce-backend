@@ -25,9 +25,6 @@ export class PaymentsCreateChargeDto {
   shipping_tracking_id: string;
 
   @IsString()
-  payment_transaction_id: string;
-
-  @IsString()
   status: string;
 
   createdAt: Date;

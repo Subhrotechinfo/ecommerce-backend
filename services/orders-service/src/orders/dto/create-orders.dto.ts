@@ -8,7 +8,7 @@ import { CreateChargeDto } from '@libs/common';
 import { Type } from 'class-transformer';
 
 export class CreateOrdersDto {
-  @IsString()
+  // @IsString()
   order_id: string;
 
   user_id: string;
@@ -27,7 +27,7 @@ export class CreateOrdersDto {
   @IsString()
   shipping_tracking_id: string;
 
-  @IsString()
+  // @IsString()
   payment_transaction_id: string;
 
   @IsString()

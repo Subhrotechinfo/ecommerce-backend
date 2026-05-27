@@ -6,6 +6,7 @@ import Stripe from 'stripe';
 import { getAppConfig } from './config';
 import { NOTIFICATION_SERVICE } from '@libs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { PaymentsCreateChargeDto } from './dto/payments-create-charge.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -14,7 +15,7 @@ export class PaymentsService {
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: ClientProxy,
   ) {}
-  async createCharge(data): Promise<any> {
+  async createCharge(data: PaymentsCreateChargeDto): Promise<any> {
     const customer = await this.stripe.customers.create({
       name: 'Jenny Rosen', //change this to dynamic
       email: data.email,
@@ -67,7 +68,10 @@ export class PaymentsService {
       '******************************************',
     );
     //send the notification to the user
-    this.notificationService.emit('notify_email', { email: data.email });
+    this.notificationService.emit('notify_email', {
+      email: data.email,
+      text: `Your payment of $${data.charge.amount} has completed successfully.`,
+    });
 
     return paymentIntent;
   }
