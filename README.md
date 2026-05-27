@@ -8,23 +8,26 @@ A scalable, production-ready **NestJS microservices backend** for an e-commerce 
 
 ```
 ecommerce-baseline/
-├── apps/                        # (Reserved for future front-end apps)
-├── libs/                        # Shared libraries & utilities
-├── packages/                    # Shared packages (configs, types, etc.)
+├── apps/                            # (Reserved for future front-end apps)
+├── libs/                            # Shared libraries & utilities
+├── packages/                        # Shared packages (configs, types, etc.)
 ├── services/
-│   ├── auth-service/            # Authentication & authorization microservice
-│   └── products/                # Product catalog microservice
+│   ├── auth-service/                # Authentication & authorization microservice
+│   ├── notification-service/        # Notification delivery microservice
+│   ├── orders-service/              # Order management microservice
+│   ├── payments-service/            # Payment processing microservice
+│   └── products/                    # Product catalog microservice
 ├── .dockerignore
-├── .env                         # Environment variables (local)
-├── .env.example                 # Environment variable template
+├── .env                             # Environment variables (local)
+├── .env.example                     # Environment variable template
 ├── .gitignore
 ├── .npmrc
-├── docker-compose.yaml          # Root-level multi-service orchestration
+├── docker-compose.yaml              # Root-level multi-service orchestration
 ├── package.json
 ├── pnpm-lock.yaml
-├── pnpm-workspace.yaml          # PNPM workspace config
-├── tsconfig.json                # Base TypeScript config
-└── turbo.json                   # Turborepo pipeline config
+├── pnpm-workspace.yaml              # PNPM workspace config
+├── tsconfig.json                    # Base TypeScript config
+└── turbo.json                       # Turborepo pipeline config
 ```
 
 ---
@@ -41,6 +44,40 @@ Handles all authentication and authorization concerns for the platform.
 - JWT token generation and validation
 - Password hashing and verification
 - Session/token management
+
+### 🔔 Notification Service (`services/notification-service`)
+
+Manages outbound email notifications via SMTP using [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) for secure, token-based authentication.
+
+**Responsibilities:**
+
+- Email delivery via SMTP with Google OAuth2 authentication
+- OAuth2 access token retrieval using a refresh token
+- Event-driven notification triggers
+- Notification templates and rendering
+- Delivery status tracking
+
+### 📋 Orders Service (`services/orders-service`)
+
+Manages the full order lifecycle for the e-commerce platform.
+
+**Responsibilities:**
+
+- Order creation and management
+- Order status tracking and updates
+- Cart and checkout processing
+- Order history and reporting
+
+### 💳 Payments Service (`services/payments-service`)
+
+Handles payment processing and financial transactions via the [Stripe](https://stripe.com/) payment gateway.
+
+**Responsibilities:**
+
+- Payment charge creation and processing via Stripe
+- Stripe webhook handling and event verification
+- Transaction history and reconciliation
+- Refund and dispute management
 
 ### 📦 Products Service (`services/products`)
 
@@ -66,6 +103,8 @@ Manages the product catalog for the e-commerce platform.
 | Monorepo         | [Turborepo](https://turbo.build/repo)              |
 | Package Manager  | [PNPM](https://pnpm.io/)                           |
 | Containerization | [Docker](https://www.docker.com/) & Docker Compose |
+| Payment Gateway  | [Stripe](https://stripe.com/)                      |
+| Email Delivery   | SMTP with [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) |
 
 ---
 
@@ -114,6 +153,9 @@ docker-compose up --build
 This starts:
 
 - `auth-service`
+- `notification-service`
+- `orders-service`
+- `payments-service`
 - `products` service
 - MongoDB instance
 
@@ -128,10 +170,10 @@ pnpm dev
 Or run a specific service:
 
 ```bash
-# Auth service only
 pnpm --filter auth-service dev
-
-# Products service only
+pnpm --filter notification-service dev
+pnpm --filter orders-service dev
+pnpm --filter payments-service dev
 pnpm --filter products dev
 ```
 
@@ -149,6 +191,7 @@ Build a specific service:
 
 ```bash
 pnpm --filter auth-service build
+pnpm --filter orders-service build
 ```
 
 ---
@@ -165,6 +208,7 @@ Run tests for a specific service:
 
 ```bash
 pnpm --filter auth-service test
+pnpm --filter payments-service test
 ```
 
 ---
@@ -176,10 +220,10 @@ Each service contains its own `Dockerfile`. The root `docker-compose.yaml` orche
 ### Build Individual Service Image
 
 ```bash
-# Auth service
 docker build -t auth-service ./services/auth-service
-
-# Products service
+docker build -t notification-service ./services/notification-service
+docker build -t orders-service ./services/orders-service
+docker build -t payments-service ./services/payments-service
 docker build -t products-service ./services/products
 ```
 
@@ -207,16 +251,61 @@ docker-compose down -v
 
 Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
-| Variable                   | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| `NODE_ENV`                 | Runtime environment (`development`, `production`) |
-| `MONGODB_URI`              | MongoDB connection string                         |
-| `JWT_SECRET`               | Secret key for JWT signing                        |
-| `JWT_EXPIRES_IN`           | JWT token expiry duration (e.g. `3600s`, `7d`)    |
-| `AUTH_SERVICE_APP_PORT`    | Port for the auth service                         |
-| `AUTH_SERVICE_APP_NAME`    | Display name for the auth service                 |
-| `PRODUCT_SERVICE_APP_PORT` | Port for the products service                     |
-| `PRODUCT_SERVICE_APP_NAME` | Display name for the products service             |
+### General
+
+| Variable      | Description                                        |
+| ------------- | -------------------------------------------------- |
+| `NODE_ENV`    | Runtime environment (`development`, `production`)  |
+| `MONGODB_URI` | MongoDB connection string                          |
+
+### Auth Service
+
+| Variable                 | Description                                    |
+| ------------------------ | ---------------------------------------------- |
+| `AUTH_SERVICE_APP_NAME`  | Display name for the auth service              |
+| `AUTH_SERVICE_APP_PORT`  | HTTP port for the auth service                 |
+| `AUTH_SERVICE_TCP_PORT`  | TCP port for inter-service communication       |
+| `AUTH_HOST`              | Hostname used by other services to reach auth  |
+| `JWT_SECRET`             | Secret key for JWT signing                     |
+| `JWT_EXPIRES_IN`         | JWT token expiry duration (e.g. `3600s`, `7d`) |
+
+### Products Service
+
+| Variable                | Description                        |
+| ----------------------- | ---------------------------------- |
+| `PRODUCT_SERVICE_APP_NAME` | Display name for the products service |
+| `PRODUCT_SERVICE_APP_PORT` | HTTP port for the products service    |
+
+### Orders Service
+
+| Variable                  | Description                              |
+| ------------------------- | ---------------------------------------- |
+| `ORDERS_SERVICE_APP_NAME` | Display name for the orders service      |
+| `ORDERS_SERVICE_APP_PORT` | HTTP port for the orders service         |
+| `ORDERS_TCP_PORT`         | TCP port for inter-service communication |
+
+### Payments Service
+
+| Variable                    | Description                              |
+| --------------------------- | ---------------------------------------- |
+| `PAYMENTS_SERVICE_APP_NAME` | Display name for the payments service    |
+| `PAYMENTS_SERVICE_APP_PORT` | HTTP port for the payments service       |
+| `PAYMENTS_HOST`             | Hostname used by other services to reach payments |
+| `PAYMENTS_TCP_PORT`         | TCP port for inter-service communication |
+| `STRIPE_SECRET_KEY`         | Stripe secret API key                    |
+
+### Notification Service
+
+| Variable                        | Description                                         |
+| ------------------------------- | --------------------------------------------------- |
+| `NOTIFICATION_SERVICE_APP_NAME` | Display name for the notification service           |
+| `NOTIFICATION_SERVICE_APP_PORT` | HTTP port for the notification service              |
+| `NOTIFICATION_HOST`             | Hostname used by other services to reach notifications |
+| `NOTIFICATION_TCP_PORT`         | TCP port for inter-service communication            |
+| `SMTP_USER`                     | Gmail address used as the SMTP sender               |
+| `GOOGLE_OAUTH_CLIENT_ID`        | Google OAuth2 client ID for SMTP authentication     |
+| `GOOGLE_OAUTH_CLIENT_SECRET`    | Google OAuth2 client secret for SMTP authentication |
+| `GOOGLE_OAUTH_REFRESH_TOKEN`    | OAuth2 refresh token to obtain SMTP access tokens   |
 
 > ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
 
@@ -231,6 +320,33 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 | `POST` | `/auth/register` | Register a new user      |
 | `POST` | `/auth/login`    | Login and receive JWT    |
 | `GET`  | `/auth/profile`  | Get current user profile |
+
+### Notification Service Endpoints
+
+| Method | Endpoint               | Description                    |
+| ------ | ---------------------- | ------------------------------ |
+| `POST` | `/notifications/send`  | Trigger a notification         |
+| `GET`  | `/notifications`       | List notifications             |
+| `GET`  | `/notifications/:id`   | Get a single notification      |
+
+### Orders Service Endpoints
+
+| Method   | Endpoint        | Description           |
+| -------- | --------------- | --------------------- |
+| `GET`    | `/orders`       | List all orders       |
+| `GET`    | `/orders/:id`   | Get a single order    |
+| `POST`   | `/orders`       | Create a new order    |
+| `PATCH`  | `/orders/:id`   | Update an order       |
+| `DELETE` | `/orders/:id`   | Cancel/delete an order|
+
+### Payments Service Endpoints
+
+| Method | Endpoint                | Description                        |
+| ------ | ----------------------- | ---------------------------------- |
+| `POST` | `/payments/charge`      | Create a new Stripe charge         |
+| `POST` | `/payments/webhook`     | Receive and verify Stripe webhooks |
+| `GET`  | `/payments`             | List payment transactions          |
+| `GET`  | `/payments/:id`         | Get a single transaction           |
 
 ### Products Service Endpoints
 
@@ -272,13 +388,31 @@ The following env vars are tracked by Turborepo and will bust the cache when cha
 
 ```
 NODE_ENV
-AUTH_SERVICE_APP_PORT
 AUTH_SERVICE_APP_NAME
-PRODUCT_SERVICE_APP_PORT
-PRODUCT_SERVICE_APP_NAME
-MONGODB_URI
-JWT_EXPIRES_IN
+AUTH_SERVICE_APP_PORT
+AUTH_SERVICE_TCP_PORT
+AUTH_HOST
 JWT_SECRET
+JWT_EXPIRES_IN
+PRODUCT_SERVICE_APP_NAME
+PRODUCT_SERVICE_APP_PORT
+ORDERS_SERVICE_APP_NAME
+ORDERS_SERVICE_APP_PORT
+ORDERS_TCP_PORT
+PAYMENTS_SERVICE_APP_NAME
+PAYMENTS_SERVICE_APP_PORT
+PAYMENTS_HOST
+PAYMENTS_TCP_PORT
+STRIPE_SECRET_KEY
+NOTIFICATION_SERVICE_APP_NAME
+NOTIFICATION_SERVICE_APP_PORT
+NOTIFICATION_HOST
+NOTIFICATION_TCP_PORT
+SMTP_USER
+GOOGLE_OAUTH_CLIENT_ID
+GOOGLE_OAUTH_CLIENT_SECRET
+GOOGLE_OAUTH_REFRESH_TOKEN
+MONGODB_URI
 ```
 
 ---
