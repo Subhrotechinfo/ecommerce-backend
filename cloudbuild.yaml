@@ -12,10 +12,11 @@ steps:
     args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions']
 
   # Orders Service
+  
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/orders-service/productions', '-f', 'services/orders-service/Dockerfile', '.']
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions', '-f', 'services/orders-service/Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/orders-service/productions']
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions']
 
   # Payments Service
   - name: 'gcr.io/cloud-builders/docker'
