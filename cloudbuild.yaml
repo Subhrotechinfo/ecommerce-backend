@@ -28,3 +28,5 @@ steps:
     args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions', '-f', 'services/products/Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions']
+options:
+  logging: CLOUD_LOGGING_ONLY
