@@ -23,7 +23,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions']
 
-  # Products Service
+  # Product Services
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions', '-f', 'services/products/Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
