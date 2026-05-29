@@ -21,7 +21,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   //adding validation to the app
-  //allow only whitelisted properties and forbid non-whitelisted propertiess
+  //allow only whitelisted properties and forbid non-whitelisted propertiesss
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   setupSwagger(app, appName, ['/products-service']);
