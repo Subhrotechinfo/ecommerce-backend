@@ -15,6 +15,7 @@ export class NotificationService {
       refreshToken: getAppConfig().refreshToken,
     },
   });
+
   // steadybuy.app@gmail.com
   async notifyEmail({ email, text }: NotifyEmailDto) {
     console.log('user', getAppConfig().smtpUser);

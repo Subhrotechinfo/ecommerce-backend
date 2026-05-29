@@ -1,0 +1,81 @@
+steps:
+#Auth Service
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'build', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions'
+  '-f',
+  'services/auth-service/Dockerfile',
+  '.'
+ ]
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'push', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions'
+ ]
+  # Notification Service
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'build', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions'
+  '-f',
+  'services/notification-service/Dockerfile',
+  '.'
+ ]
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'push', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions'
+ ]
+ #Orders Service
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'build', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/orders-service/productions'
+  '-f',
+  'services/orders-service/Dockerfile',
+  '.'
+ ]
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'push', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/orders-service/productions'
+ ]
+ #Payments Service
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'build', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions'
+  '-f',
+  'services/payments-service/Dockerfile',
+  '.'
+ ]
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'push', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions'
+ ]
+ #Products
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'build', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions'
+  '-f',
+  'services/payments-service/Dockerfile',
+  '.'
+ ]
+ - name: 'gcr.io/cloud-builder/docker'
+   args: [
+  'push', 
+  '-t',
+  'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions'
+ ]

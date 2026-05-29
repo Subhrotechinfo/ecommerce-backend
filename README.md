@@ -94,16 +94,16 @@ Manages the product catalog for the e-commerce platform.
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology                                         |
-| ---------------- | -------------------------------------------------- |
-| Runtime          | [Node.js](https://nodejs.org/)                     |
-| Framework        | [NestJS](https://nestjs.com/)                      |
-| Language         | TypeScript                                         |
-| Database         | [MongoDB](https://www.mongodb.com/)                |
-| Monorepo         | [Turborepo](https://turbo.build/repo)              |
-| Package Manager  | [PNPM](https://pnpm.io/)                           |
-| Containerization | [Docker](https://www.docker.com/) & Docker Compose |
-| Payment Gateway  | [Stripe](https://stripe.com/)                      |
+| Layer            | Technology                                                                         |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| Runtime          | [Node.js](https://nodejs.org/)                                                     |
+| Framework        | [NestJS](https://nestjs.com/)                                                      |
+| Language         | TypeScript                                                                         |
+| Database         | [MongoDB](https://www.mongodb.com/)                                                |
+| Monorepo         | [Turborepo](https://turbo.build/repo)                                              |
+| Package Manager  | [PNPM](https://pnpm.io/)                                                           |
+| Containerization | [Docker](https://www.docker.com/) & Docker Compose                                 |
+| Payment Gateway  | [Stripe](https://stripe.com/)                                                      |
 | Email Delivery   | SMTP with [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) |
 
 ---
@@ -253,26 +253,26 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
 ### General
 
-| Variable      | Description                                        |
-| ------------- | -------------------------------------------------- |
-| `NODE_ENV`    | Runtime environment (`development`, `production`)  |
-| `MONGODB_URI` | MongoDB connection string                          |
+| Variable      | Description                                       |
+| ------------- | ------------------------------------------------- |
+| `NODE_ENV`    | Runtime environment (`development`, `production`) |
+| `MONGODB_URI` | MongoDB connection string                         |
 
 ### Auth Service
 
-| Variable                 | Description                                    |
-| ------------------------ | ---------------------------------------------- |
-| `AUTH_SERVICE_APP_NAME`  | Display name for the auth service              |
-| `AUTH_SERVICE_APP_PORT`  | HTTP port for the auth service                 |
-| `AUTH_SERVICE_TCP_PORT`  | TCP port for inter-service communication       |
-| `AUTH_HOST`              | Hostname used by other services to reach auth  |
-| `JWT_SECRET`             | Secret key for JWT signing                     |
-| `JWT_EXPIRES_IN`         | JWT token expiry duration (e.g. `3600s`, `7d`) |
+| Variable                | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `AUTH_SERVICE_APP_NAME` | Display name for the auth service              |
+| `AUTH_SERVICE_APP_PORT` | HTTP port for the auth service                 |
+| `AUTH_SERVICE_TCP_PORT` | TCP port for inter-service communication       |
+| `AUTH_HOST`             | Hostname used by other services to reach auth  |
+| `JWT_SECRET`            | Secret key for JWT signing                     |
+| `JWT_EXPIRES_IN`        | JWT token expiry duration (e.g. `3600s`, `7d`) |
 
 ### Products Service
 
-| Variable                | Description                        |
-| ----------------------- | ---------------------------------- |
+| Variable                   | Description                           |
+| -------------------------- | ------------------------------------- |
 | `PRODUCT_SERVICE_APP_NAME` | Display name for the products service |
 | `PRODUCT_SERVICE_APP_PORT` | HTTP port for the products service    |
 
@@ -286,26 +286,26 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
 ### Payments Service
 
-| Variable                    | Description                              |
-| --------------------------- | ---------------------------------------- |
-| `PAYMENTS_SERVICE_APP_NAME` | Display name for the payments service    |
-| `PAYMENTS_SERVICE_APP_PORT` | HTTP port for the payments service       |
+| Variable                    | Description                                       |
+| --------------------------- | ------------------------------------------------- |
+| `PAYMENTS_SERVICE_APP_NAME` | Display name for the payments service             |
+| `PAYMENTS_SERVICE_APP_PORT` | HTTP port for the payments service                |
 | `PAYMENTS_HOST`             | Hostname used by other services to reach payments |
-| `PAYMENTS_TCP_PORT`         | TCP port for inter-service communication |
-| `STRIPE_SECRET_KEY`         | Stripe secret API key                    |
+| `PAYMENTS_TCP_PORT`         | TCP port for inter-service communication          |
+| `STRIPE_SECRET_KEY`         | Stripe secret API key                             |
 
 ### Notification Service
 
-| Variable                        | Description                                         |
-| ------------------------------- | --------------------------------------------------- |
-| `NOTIFICATION_SERVICE_APP_NAME` | Display name for the notification service           |
-| `NOTIFICATION_SERVICE_APP_PORT` | HTTP port for the notification service              |
+| Variable                        | Description                                            |
+| ------------------------------- | ------------------------------------------------------ |
+| `NOTIFICATION_SERVICE_APP_NAME` | Display name for the notification service              |
+| `NOTIFICATION_SERVICE_APP_PORT` | HTTP port for the notification service                 |
 | `NOTIFICATION_HOST`             | Hostname used by other services to reach notifications |
-| `NOTIFICATION_TCP_PORT`         | TCP port for inter-service communication            |
-| `SMTP_USER`                     | Gmail address used as the SMTP sender               |
-| `GOOGLE_OAUTH_CLIENT_ID`        | Google OAuth2 client ID for SMTP authentication     |
-| `GOOGLE_OAUTH_CLIENT_SECRET`    | Google OAuth2 client secret for SMTP authentication |
-| `GOOGLE_OAUTH_REFRESH_TOKEN`    | OAuth2 refresh token to obtain SMTP access tokens   |
+| `NOTIFICATION_TCP_PORT`         | TCP port for inter-service communication               |
+| `SMTP_USER`                     | Gmail address used as the SMTP sender                  |
+| `GOOGLE_OAUTH_CLIENT_ID`        | Google OAuth2 client ID for SMTP authentication        |
+| `GOOGLE_OAUTH_CLIENT_SECRET`    | Google OAuth2 client secret for SMTP authentication    |
+| `GOOGLE_OAUTH_REFRESH_TOKEN`    | OAuth2 refresh token to obtain SMTP access tokens      |
 
 > ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
 
@@ -323,30 +323,30 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 
 ### Notification Service Endpoints
 
-| Method | Endpoint               | Description                    |
-| ------ | ---------------------- | ------------------------------ |
-| `POST` | `/notifications/send`  | Trigger a notification         |
-| `GET`  | `/notifications`       | List notifications             |
-| `GET`  | `/notifications/:id`   | Get a single notification      |
+| Method | Endpoint              | Description               |
+| ------ | --------------------- | ------------------------- |
+| `POST` | `/notifications/send` | Trigger a notification    |
+| `GET`  | `/notifications`      | List notifications        |
+| `GET`  | `/notifications/:id`  | Get a single notification |
 
 ### Orders Service Endpoints
 
-| Method   | Endpoint        | Description           |
-| -------- | --------------- | --------------------- |
-| `GET`    | `/orders`       | List all orders       |
-| `GET`    | `/orders/:id`   | Get a single order    |
-| `POST`   | `/orders`       | Create a new order    |
-| `PATCH`  | `/orders/:id`   | Update an order       |
-| `DELETE` | `/orders/:id`   | Cancel/delete an order|
+| Method   | Endpoint      | Description            |
+| -------- | ------------- | ---------------------- |
+| `GET`    | `/orders`     | List all orders        |
+| `GET`    | `/orders/:id` | Get a single order     |
+| `POST`   | `/orders`     | Create a new order     |
+| `PATCH`  | `/orders/:id` | Update an order        |
+| `DELETE` | `/orders/:id` | Cancel/delete an order |
 
 ### Payments Service Endpoints
 
-| Method | Endpoint                | Description                        |
-| ------ | ----------------------- | ---------------------------------- |
-| `POST` | `/payments/charge`      | Create a new Stripe charge         |
-| `POST` | `/payments/webhook`     | Receive and verify Stripe webhooks |
-| `GET`  | `/payments`             | List payment transactions          |
-| `GET`  | `/payments/:id`         | Get a single transaction           |
+| Method | Endpoint            | Description                        |
+| ------ | ------------------- | ---------------------------------- |
+| `POST` | `/payments/charge`  | Create a new Stripe charge         |
+| `POST` | `/payments/webhook` | Receive and verify Stripe webhooks |
+| `GET`  | `/payments`         | List payment transactions          |
+| `GET`  | `/payments/:id`     | Get a single transaction           |
 
 ### Products Service Endpoints
 
