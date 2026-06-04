@@ -1,6 +1,6 @@
 # 🛒 E-Commerce Backend — Turborepo Microservices
 
-A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker.
+A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker, deployed to **Google Kubernetes Engine (GKE)** via **Google Cloud Build** with images stored in **Google Artifact Registry**.
 
 ---
 
@@ -10,6 +10,8 @@ A scalable, production-ready **NestJS microservices backend** for an e-commerce 
 ecommerce-baseline/
 ├── apps/                            # (Reserved for future front-end apps)
 ├── libs/                            # Shared libraries & utilities
+├── k8s/
+│   └── ecommerce/                   # Kubernetes manifests for all services
 ├── packages/                        # Shared packages (configs, types, etc.)
 ├── services/
 │   ├── auth-service/                # Authentication & authorization microservice
@@ -22,6 +24,7 @@ ecommerce-baseline/
 ├── .env.example                     # Environment variable template
 ├── .gitignore
 ├── .npmrc
+├── cloudbuild.yaml                  # Google Cloud Build CI/CD pipeline
 ├── docker-compose.yaml              # Root-level multi-service orchestration
 ├── package.json
 ├── pnpm-lock.yaml
@@ -39,7 +42,6 @@ ecommerce-baseline/
 Handles all authentication and authorization concerns for the platform.
 
 **Responsibilities:**
-
 - User registration and login
 - JWT token generation and validation
 - Password hashing and verification
@@ -50,7 +52,6 @@ Handles all authentication and authorization concerns for the platform.
 Manages outbound email notifications via SMTP using [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) for secure, token-based authentication.
 
 **Responsibilities:**
-
 - Email delivery via SMTP with Google OAuth2 authentication
 - OAuth2 access token retrieval using a refresh token
 - Event-driven notification triggers
@@ -62,7 +63,6 @@ Manages outbound email notifications via SMTP using [Google OAuth2](https://deve
 Manages the full order lifecycle for the e-commerce platform.
 
 **Responsibilities:**
-
 - Order creation and management
 - Order status tracking and updates
 - Cart and checkout processing
@@ -73,7 +73,6 @@ Manages the full order lifecycle for the e-commerce platform.
 Handles payment processing and financial transactions via the [Stripe](https://stripe.com/) payment gateway.
 
 **Responsibilities:**
-
 - Payment charge creation and processing via Stripe
 - Stripe webhook handling and event verification
 - Transaction history and reconciliation
@@ -84,7 +83,6 @@ Handles payment processing and financial transactions via the [Stripe](https://s
 Manages the product catalog for the e-commerce platform.
 
 **Responsibilities:**
-
 - CRUD operations for products
 - Product listing and filtering
 - Inventory/stock management
@@ -103,6 +101,9 @@ Manages the product catalog for the e-commerce platform.
 | Monorepo         | [Turborepo](https://turbo.build/repo)                                              |
 | Package Manager  | [PNPM](https://pnpm.io/)                                                           |
 | Containerization | [Docker](https://www.docker.com/) & Docker Compose                                 |
+| Orchestration    | [Kubernetes (GKE)](https://cloud.google.com/kubernetes-engine)                     |
+| CI/CD            | [Google Cloud Build](https://cloud.google.com/build)                               |
+| Image Registry   | [Google Artifact Registry](https://cloud.google.com/artifact-registry)             |
 | Payment Gateway  | [Stripe](https://stripe.com/)                                                      |
 | Email Delivery   | SMTP with [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) |
 
@@ -116,6 +117,8 @@ Make sure you have the following installed:
 - [PNPM](https://pnpm.io/) `>= 8.x`
 - [Docker](https://www.docker.com/) & Docker Compose
 - [MongoDB](https://www.mongodb.com/) (or use the Docker Compose setup)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) (for Kubernetes deployments)
+- [Google Cloud SDK (`gcloud`)](https://cloud.google.com/sdk/docs/install) (for GKE & Cloud Build)
 
 ---
 
@@ -124,8 +127,8 @@ Make sure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/ecommerce-baseline.git
-cd ecommerce-baseline
+git clone https://github.com/Subhrotechinfo/ecommerce-backend.git
+cd ecommerce-backend
 ```
 
 ### 2. Install Dependencies
@@ -151,7 +154,6 @@ docker-compose up --build
 ```
 
 This starts:
-
 - `auth-service`
 - `notification-service`
 - `orders-service`
@@ -243,6 +245,278 @@ docker-compose down
 
 ```bash
 docker-compose down -v
+```
+
+---
+
+## ☁️ Google Cloud Build — CI/CD Automation
+
+This project uses **Google Cloud Build** to automate building and pushing Docker images on every commit to the `main` branch. The pipeline is defined in [`cloudbuild.yaml`](./cloudbuild.yaml) at the root of the repository.
+
+### How It Works
+
+1. A push to `main` triggers a Cloud Build trigger (configured in GCP Console).
+2. Cloud Build builds a Docker image for each microservice using its respective `Dockerfile`.
+3. Each image is tagged and pushed to **Google Artifact Registry** in the `asia-south1` region under the `ecommerce-497413` project.
+
+### Cloud Build Pipeline (`cloudbuild.yaml`)
+
+```yaml
+steps:
+  # Auth Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions', '-f', 'services/auth-service/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions']
+
+  # Notification Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions', '-f', 'services/notification-service/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions']
+
+  # Orders Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions', '-f', 'services/orders-service/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions']
+
+  # Payments Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions', '-f', 'services/payments-service/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions']
+
+  # Products Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions', '-f', 'services/products/Dockerfile', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+```
+
+### Setting Up Cloud Build Trigger
+
+1. Navigate to **Cloud Build → Triggers** in the [GCP Console](https://console.cloud.google.com/cloud-build/triggers).
+2. Click **Create Trigger** and connect your GitHub repository.
+3. Set the trigger to fire on pushes to the `main` branch.
+4. Point it to `cloudbuild.yaml` as the build configuration file.
+5. Ensure the Cloud Build service account has the **Artifact Registry Writer** IAM role.
+
+### Authenticate Docker with Artifact Registry (local pushes)
+
+```bash
+gcloud auth configure-docker asia-south1-docker.pkg.dev
+```
+
+---
+
+## 🗃️ Google Artifact Registry — Image Storage
+
+All Docker images are stored in **Google Artifact Registry** in the `asia-south1` region.
+
+### Image Registry URLs
+
+| Service              | Registry Path                                                                 |
+| -------------------- | ----------------------------------------------------------------------------- |
+| Auth Service         | `asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions`        |
+| Notification Service | `asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions`|
+| Orders Service       | `asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions`       |
+| Payments Service     | `asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions`    |
+| Products Service     | `asia-south1-docker.pkg.dev/ecommerce-497413/products/productions`            |
+
+### Pull an Image Manually
+
+```bash
+# Authenticate first
+gcloud auth configure-docker asia-south1-docker.pkg.dev
+
+# Pull a specific image
+docker pull asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions:latest
+```
+
+---
+
+## ☸️ Kubernetes (GKE) Deployment
+
+All Kubernetes manifests live in the `k8s/ecommerce/` directory. Each microservice has its own `Deployment` and `Service` manifest.
+
+### Prerequisites
+
+```bash
+# Install kubectl
+gcloud components install kubectl
+
+# Authenticate and get GKE cluster credentials
+gcloud container clusters get-credentials <CLUSTER_NAME> \
+  --region asia-south1 \
+  --project ecommerce-497413
+```
+
+### Directory Structure
+
+```
+k8s/
+└── ecommerce/
+    ├── auth-service/
+    │   ├── deployment.yaml
+    │   └── service.yaml
+    ├── notification-service/
+    │   ├── deployment.yaml
+    │   └── service.yaml
+    ├── orders-service/
+    │   ├── deployment.yaml
+    │   └── service.yaml
+    ├── payments-service/
+    │   ├── deployment.yaml
+    │   └── service.yaml
+    └── products/
+        ├── deployment.yaml
+        └── service.yaml
+```
+
+### Deploy All Services
+
+Apply all manifests in the `k8s/ecommerce/` directory:
+
+```bash
+kubectl apply -f k8s/ecommerce/
+```
+
+### Deploy a Specific Service
+
+```bash
+kubectl apply -f k8s/ecommerce/auth-service/
+kubectl apply -f k8s/ecommerce/orders-service/
+```
+
+### Check Deployment Status
+
+```bash
+# List all pods
+kubectl get pods
+
+# List all services
+kubectl get services
+
+# Describe a specific deployment
+kubectl describe deployment auth-service
+
+# View logs for a specific pod
+kubectl logs -f deployment/auth-service
+```
+
+### Rolling Update (after a new image push)
+
+When Cloud Build pushes a new image to Artifact Registry, trigger a rolling update:
+
+```bash
+kubectl rollout restart deployment/auth-service
+kubectl rollout restart deployment/orders-service
+kubectl rollout restart deployment/payments-service
+kubectl rollout restart deployment/notification-service
+kubectl rollout restart deployment/products-service
+```
+
+### Scale a Deployment
+
+```bash
+# Scale auth-service to 3 replicas
+kubectl scale deployment auth-service --replicas=3
+```
+
+### Delete All Resources
+
+```bash
+kubectl delete -f k8s/ecommerce/
+```
+
+### Example Deployment Manifest
+
+Below is an example `deployment.yaml` for the Auth Service. Other services follow the same pattern:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions:latest
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - secretRef:
+                name: ecommerce-secrets
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+  type: ClusterIP
+```
+
+### Managing Secrets in Kubernetes
+
+Store sensitive environment variables (JWT secrets, Stripe keys, etc.) as Kubernetes Secrets:
+
+```bash
+kubectl create secret generic ecommerce-secrets \
+  --from-env-file=.env
+```
+
+Reference the secret in your deployment manifests using `envFrom.secretRef`.
+
+---
+
+## 🏗️ Full CI/CD Flow
+
+```
+GitHub Push (main branch)
+        │
+        ▼
+Google Cloud Build (cloudbuild.yaml)
+        │
+        ├── Build Docker images for all 5 services
+        │
+        └── Push images to Google Artifact Registry
+                  (asia-south1-docker.pkg.dev/ecommerce-497413/...)
+                        │
+                        ▼
+              kubectl rollout restart
+                        │
+                        ▼
+          Google Kubernetes Engine (GKE)
+              Pods pull latest images
+              and serve traffic
 ```
 
 ---
@@ -358,13 +632,11 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 | `PATCH`  | `/products/:id` | Update a product     |
 | `DELETE` | `/products/:id` | Delete a product     |
 
-> Update these endpoints to match your actual route definitions.
-
 ---
 
 ## 🔄 Turborepo Pipelines
 
-Defined in `turbo.json`, the pipelines enable smart caching and parallel task execution across all services. The UI is set to `tui` (terminal UI) for a rich interactive output.
+Defined in `turbo.json`, the pipelines enable smart caching and parallel task execution across all services.
 
 | Task          | Command            | Description                                                                      |
 | ------------- | ------------------ | -------------------------------------------------------------------------------- |
@@ -378,55 +650,25 @@ Defined in `turbo.json`, the pipelines enable smart caching and parallel task ex
 ### Global Dependencies
 
 Turborepo treats the following as global — any change to them invalidates the cache for **all** tasks:
-
 - `.env` — shared environment config
 - `tsconfig.json` — root TypeScript configuration
-
-### Global Environment Variables
-
-The following env vars are tracked by Turborepo and will bust the cache when changed:
-
-```
-NODE_ENV
-AUTH_SERVICE_APP_NAME
-AUTH_SERVICE_APP_PORT
-AUTH_SERVICE_TCP_PORT
-AUTH_HOST
-JWT_SECRET
-JWT_EXPIRES_IN
-PRODUCT_SERVICE_APP_NAME
-PRODUCT_SERVICE_APP_PORT
-ORDERS_SERVICE_APP_NAME
-ORDERS_SERVICE_APP_PORT
-ORDERS_TCP_PORT
-PAYMENTS_SERVICE_APP_NAME
-PAYMENTS_SERVICE_APP_PORT
-PAYMENTS_HOST
-PAYMENTS_TCP_PORT
-STRIPE_SECRET_KEY
-NOTIFICATION_SERVICE_APP_NAME
-NOTIFICATION_SERVICE_APP_PORT
-NOTIFICATION_HOST
-NOTIFICATION_TCP_PORT
-SMTP_USER
-GOOGLE_OAUTH_CLIENT_ID
-GOOGLE_OAUTH_CLIENT_SECRET
-GOOGLE_OAUTH_REFRESH_TOKEN
-MONGODB_URI
-```
 
 ---
 
 ## 📦 Adding a New Service
 
 1. Create a new NestJS app under `services/`:
-   ```bash
-   nest new services/my-new-service
-   ```
+
+```bash
+nest new services/my-new-service
+```
+
 2. Add it to `pnpm-workspace.yaml` if not auto-detected.
 3. Add a `Dockerfile` inside the new service.
 4. Add the service to `docker-compose.yaml`.
-5. Add any shared packages to `libs/` or `packages/` as needed.
+5. Add build and push steps for the new service to `cloudbuild.yaml`.
+6. Create `k8s/ecommerce/my-new-service/deployment.yaml` and `service.yaml`.
+7. Add any shared packages to `libs/` or `packages/` as needed.
 
 ---
 
