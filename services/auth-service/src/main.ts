@@ -25,7 +25,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   setupSwagger(app, appName, ['/auth-services']);
-  // await app.init();
+  // await app.init();;
   await app.startAllMicroservices();
   await app.listen(httpPort);
   logBootstrapInfo(app, {
