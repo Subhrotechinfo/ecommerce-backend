@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: auth-service
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions
+        imagePullPolicy: Always
+        command: ["node"]
+        args: ["services/auth-service/dist/src/main"]
+        env:
+         - name: MONGODB_URI
+           valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: connectionString
+         - name: NODE_ENV
+           value: development
+         - name: AUTH_SERVICE_APP_NAME
+           value: Auth Service 
+         - name: AUTH_SERVICE_APP_PORT
+           value: "5001"
+         - name: JWT_EXPIRES_IN
+           value: "3600" 
+         - name: JWT_SECRET
+           valueFrom:
+            secretKeyRef:
+              name: jwt
+              key: secret

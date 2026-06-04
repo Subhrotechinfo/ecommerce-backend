@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: notifications-service
+  name: notifications-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications-service
+  template:
+    metadata:
+      labels:
+        app: notifications-service
+    spec:
+      containers:
+      - name: notifications-service
+        image: asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions
+        imagePullPolicy: Always
+        command: ["node"]
+        args: ["services/notification-service/dist/src/main"]
+        env:
+         - name: NODE_ENV
+           value: development
+         - name: NOTIFICATION_SERVICE_APP_NAME
+           value: Notification Service
+         - name: NOTIFICATION_SERVICE_APP_PORT
+           value: "5007"
+         - name: GOOGLE_OAUTH_CLIENT_ID
+           value: "758208515980-vv5dendfk9dg6eq4p30a1stph98e79jm.apps.googleusercontent.com"
+         - name: SMTP_USER
+           value: "subhro.spfy@gmail.com"
+         - name: GOOGLE_OAUTH_CLIENT_SECRET
+           valueFrom:
+             secretKeyRef:
+               name: google
+               key: clientSecret
+         - name: GOOGLE_OAUTH_REFRESH_TOKEN
+           valueFrom:
+             secretKeyRef:
+               name: google
+               key: refreshToken
+        ports:
+          - containerPort: 5007

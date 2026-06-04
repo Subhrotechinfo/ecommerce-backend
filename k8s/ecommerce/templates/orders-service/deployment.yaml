@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: orders-service
+  name: orders-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-service
+  template:
+    metadata:
+      labels:
+        app: orders-service
+    spec:
+      containers:
+      - name: orders-service
+        image: asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions
+        imagePullPolicy: Always
+        command: ["node"]
+        args: ["services/orders-service/dist/src/main"]
+        env:
+         - name: MONGODB_URI
+           valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: connectionString
+         - name: NODE_ENV
+           value: development
+         - name: ORDERS_SERVICE_APP_NAME
+           value: Orders Service
+         - name: ORDERS_SERVICE_APP_PORT
+           value: "5005"
+        

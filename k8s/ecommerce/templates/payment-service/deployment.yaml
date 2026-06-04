@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: payments-service
+  name: payments-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-service
+  template:
+    metadata:
+      labels:
+        app: payments-service
+    spec:
+      containers:
+      - name: payments-service
+        image: asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions
+        imagePullPolicy: Always
+        command: ["node"]
+        args: ["services/payments-service/dist/src/main"]
+        env:
+        - name: NODE_ENV
+          value: development
+        - name: PAYMENTS_SERVICE_APP_NAME
+          value: Payments Service
+        - name: PAYMENTS_SERVICE_APP_PORT
+          value: "5003"
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: stripe
+              key: secret
+        
