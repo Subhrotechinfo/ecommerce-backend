@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../services/payments-service/dist",
+    "rootDir": "./src",
     // --- NestJS decorator support ---
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
