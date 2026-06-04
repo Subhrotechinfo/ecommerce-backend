@@ -21,15 +21,21 @@ spec:
         command: ["node"]
         args: ["services/payments-service/dist/src/main"]
         env:
-        - name: NODE_ENV
-          value: development
-        - name: PAYMENTS_SERVICE_APP_NAME
-          value: Payments Service
-        - name: PAYMENTS_SERVICE_APP_PORT
-          value: "5003"
-        - name: STRIPE_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: stripe
-              key: secret
-        
+          - name: NODE_ENV
+            value: development
+          - name: PAYMENTS_SERVICE_APP_NAME
+            value: Payments Service
+          - name: PAYMENTS_TCP_PORT
+            value: "5004"
+          - name: NOTIFICATION_HOST
+            value: notifications-service-tcp
+          - name: NOTIFICATION_TCP_PORT
+            value: "5008"
+          - name: STRIPE_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: stripe
+                key: secret
+        ports:
+          # - containerPort: 5003 #If http port not required then remove this
+          - containerPort: 5004

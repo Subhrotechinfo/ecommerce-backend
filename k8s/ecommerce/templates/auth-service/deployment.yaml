@@ -32,6 +32,8 @@ spec:
            value: Auth Service 
          - name: AUTH_SERVICE_APP_PORT
            value: "5001"
+         - name: AUTH_SERVICE_TCP_PORT
+           value: "5002"
          - name: JWT_EXPIRES_IN
            value: "3600" 
          - name: JWT_SECRET
@@ -39,3 +41,6 @@ spec:
             secretKeyRef:
               name: jwt
               key: secret
+        ports:
+          - containerPort: 5001 
+          - containerPort: 5002

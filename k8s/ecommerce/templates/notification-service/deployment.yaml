@@ -27,6 +27,8 @@ spec:
            value: Notification Service
          - name: NOTIFICATION_SERVICE_APP_PORT
            value: "5007"
+         - name:  NOTIFICATION_TCP_PORT
+           value: "5008"
          - name: GOOGLE_OAUTH_CLIENT_ID
            value: "758208515980-vv5dendfk9dg6eq4p30a1stph98e79jm.apps.googleusercontent.com"
          - name: SMTP_USER
@@ -42,4 +44,6 @@ spec:
                name: google
                key: refreshToken
         ports:
-          - containerPort: 5007
+          - containerPort: 5007 #if http port not required then remove this
+          - containerPort: 5008
+      #Keeping both ports for now as notification service is also sending http request to payment service. If http port not required then remove this and also remove from service.yaml

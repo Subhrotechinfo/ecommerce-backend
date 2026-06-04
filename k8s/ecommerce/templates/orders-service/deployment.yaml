@@ -32,4 +32,16 @@ spec:
            value: Orders Service
          - name: ORDERS_SERVICE_APP_PORT
            value: "5005"
-        
+         - name: ORDERS_TCP_PORT
+           value: "5006"
+         - name: AUTH_HOST
+           value: auth-service-tcp
+         - name: AUTH_SERVICE_TCP_PORT
+           value: "5002"
+         - name: PAYMENTS_HOST
+           value: payments-service
+         - name: PAYMENTS_TCP_PORT
+           value: "5004"
+        ports:
+          - containerPort: 5005 #If http port not required then remove this
+          - containerPort: 5006

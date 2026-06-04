@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: orders-service
+  name: orders-service-http
+spec:
+  ports:
+  - name: "http"
+    port: 5005
+    protocol: TCP
+    targetPort: 5005
+  selector:
+    app: orders-service
+  type: NodePort

@@ -3,13 +3,13 @@ kind: Service
 metadata:
   labels:
     app: notifications-service
-  name: notifications-service
+  name: notifications-service-tcp
 spec:
   ports:
-  - name: "5007"
-    port: 5007
+  - name: "tcp"
+    port: 5008
     protocol: TCP
-    targetPort: 5007
+    targetPort: 5008
   selector:
     app: notifications-service
   type: ClusterIP

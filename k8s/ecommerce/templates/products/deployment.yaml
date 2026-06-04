@@ -30,5 +30,15 @@ spec:
            value: development
          - name: PRODUCT_SERVICE_APP_NAME
            value: Product Service
-         - name: PAYMENTS_SERVICE_APP_PORT
+         - name: PRODUCT_SERVICE_APP_PORT
            value: "5000"
+         - name: AUTH_HOST
+           value: auth-service
+         - name: AUTH_SERVICE_TCP_PORT
+           value: "5002"
+         - name: PAYMENTS_HOST
+           value: payments-service
+         - name: PAYMENTS_TCP_PORT
+           value: "5004"
+        ports:
+          - containerPort: 5000
