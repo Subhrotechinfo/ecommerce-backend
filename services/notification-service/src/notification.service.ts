@@ -17,7 +17,7 @@ export class NotificationService {
   });
 
   // steadybuy.app@gmail.com
-  async notifyEmail({ email, text }: NotifyEmailDto) {
+  async notifyEmail({ email, text, html }: NotifyEmailDto) {
     console.log('user', getAppConfig().smtpUser);
     console.log('clientId', getAppConfig().clientId);
     console.log('clientSecret', getAppConfig().clientSecret);
@@ -27,8 +27,9 @@ export class NotificationService {
       await this.transporter.sendMail({
         from: getAppConfig().smtpUser,
         to: email,
-        subject: 'Ecommerce Notification',
+        subject: 'The Steady Buy- Payment Confirmation',
         text: text,
+        html: html,
       });
     } catch (error) {
       console.log('Error - **************', error);

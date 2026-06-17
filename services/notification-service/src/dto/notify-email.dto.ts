@@ -6,4 +6,6 @@ export class NotifyEmailDto {
 
   @IsString()
   text: string;
+
+  html?: string;
 }
