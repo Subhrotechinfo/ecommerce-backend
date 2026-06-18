@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: notifications-service
-  name: notifications-service
+    app: notification-service
+  name: notification-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: notifications-service
+      app: notification-service
   template:
     metadata:
       labels:
-        app: notifications-service
+        app: notification-service
     spec:
       containers:
-      - name: notifications-service
-        image: asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions
+      - name: notification-service
+        image: asia-south1-docker.pkg.dev/ecommerce-499513/notification-service/production
         imagePullPolicy: Always
         command: ["node"]
-        args: ["services/notification-service/dist/src/main"]
+        args: ["services/notification-service/dist/main"]
         env:
          - name: NODE_ENV
            value: development
@@ -30,9 +30,9 @@ spec:
          - name:  NOTIFICATION_TCP_PORT
            value: "5008"
          - name: GOOGLE_OAUTH_CLIENT_ID
-           value: "758208515980-vv5dendfk9dg6eq4p30a1stph98e79jm.apps.googleusercontent.com"
+           value: "739344659399-vaffnnmgbn0jh2bm70boaq2d5650m4n4.apps.googleusercontent.com"
          - name: SMTP_USER
-           value: "subhro.spfy@gmail.com"
+           value: "steadybuy.app@gmail.com"
          - name: GOOGLE_OAUTH_CLIENT_SECRET
            valueFrom:
              secretKeyRef:

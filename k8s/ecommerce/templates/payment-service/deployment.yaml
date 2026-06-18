@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: payments-service
-        image: asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions
+        image: asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/production
         imagePullPolicy: Always
         command: ["node"]
-        args: ["services/payments-service/dist/src/main"]
+        args: ["services/payments-service/dist/main"]
         env:
           - name: NODE_ENV
             value: development
@@ -28,7 +28,7 @@ spec:
           - name: PAYMENTS_TCP_PORT
             value: "5004"
           - name: NOTIFICATION_HOST
-            value: notifications-service-tcp
+            value: notification-service-tcp
           - name: NOTIFICATION_TCP_PORT
             value: "5008"
           - name: STRIPE_SECRET_KEY

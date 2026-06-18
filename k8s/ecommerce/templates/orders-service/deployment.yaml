@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: orders-service
-        image: asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions
+        image: asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/production
         imagePullPolicy: Always
         command: ["node"]
-        args: ["services/orders-service/dist/src/main"]
+        args: ["services/orders-service/dist/main"]
         env:
          - name: MONGODB_URI
            valueFrom:

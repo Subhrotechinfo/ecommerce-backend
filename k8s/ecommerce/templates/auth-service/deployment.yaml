@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions
+        image: asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production
         imagePullPolicy: Always
         command: ["node"]
-        args: ["services/auth-service/dist/src/main"]
+        args: ["services/auth-service/dist/main"]
         env:
          - name: MONGODB_URI
            valueFrom:
