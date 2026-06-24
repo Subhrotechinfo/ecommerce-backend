@@ -701,3 +701,15 @@ nest new services/my-new-service
 ## 📄 License
 
 This project is licensed under the [MIT License](./LICENSE).
+
+---
+
+<p align="center">
+  Made with ❤️ by <strong>Subhro Chatterjee</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Subhrotechinfo">
+    <img src="https://img.shields.io/badge/Author-Subhrotechinfo-blue?style=flat-square&logo=github" alt="Author Badge"/>
+  </a>
+</p>
