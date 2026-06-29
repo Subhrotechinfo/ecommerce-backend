@@ -278,7 +278,7 @@ This project uses **Google Cloud Build** to automate building and pushing Docker
 
 1. A push to `main` triggers a Cloud Build trigger (configured in GCP Console).
 2. Cloud Build builds a Docker image for each microservice using its respective `Dockerfile`.
-3. Each image is tagged and pushed to **Google Artifact Registry** in the `asia-south1` region under the `ecommerce-497413` project.
+3. Each image is tagged and pushed to **Google Artifact Registry** in the `asia-south1` region under the `ecommerce-499513` project.
 
 ### Cloud Build Pipeline (`cloudbuild.yaml`)
 
@@ -433,7 +433,7 @@ gcloud components install kubectl
 # Authenticate and get GKE cluster credentials
 gcloud container clusters get-credentials <CLUSTER_NAME> \
   --region asia-south1 \
-  --project ecommerce-497413
+  --project ecommerce-499513
 ```
 
 ### Directory Structure

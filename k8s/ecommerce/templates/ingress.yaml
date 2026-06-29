@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce
+spec:
+  rules:
+   - http:
+        paths:
+          - path: /products/*
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: products
+                port: 
+                  number: 5000
+          - path: /auth/*
+            pathType: ImplementationSpecific
+            backend: 
+              service:
+                name: auth-service-http
+                port:
+                  number: 5001
+          # - path: /user/*         # users route if needed just deploy
+          #   pathType: ImplementationSpecific
+          #   backend: 
+          #     service:
+          #       name: auth-service-http  # same service
+          #       port:
+          #         number: 5001
+          - path: /orders/*
+            pathType: ImplementationSpecific
+            backend: 
+              service:
+                name: orders-service-http
+                port:
+                  number: 5005
+
