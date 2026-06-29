@@ -1,0 +1,30 @@
+version: 0.2
+
+phases: 
+  pre_build: 
+    commands: 
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 971598352479.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+     - docker build -t auth-service ./services/auth-service/Dockerfile .
+     - docker tag auth-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest
+
+     - docker build -t notification-service ./services/notification-service/Dockerfile .
+     - docker tag notification-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/notification-service:latest
+
+     - docker build -t orders-service ./services/orders-service/Dockerfile .
+     - docker tag orders-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service:latest
+
+     - docker build -t payments-service ./services/payments-service/Dockerfile .
+     - docker tag payments-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service:latest
+
+     - docker build -t products ./services/products/Dockerfile .
+     - docker tag products:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/products:latest
+
+  post_build:
+    commands: 
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/notification-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/products:latest
