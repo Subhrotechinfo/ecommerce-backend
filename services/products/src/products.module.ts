@@ -6,6 +6,7 @@ import { ProductsController } from './products.controller';
 import {
   AUTH_SERVICE,
   DatabaseModule,
+  HealthModule,
   LoggerModule,
   PAYMENTS_SERVICE,
 } from '@libs/common';
@@ -53,6 +54,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         }),
       },
     ]),
+    HealthModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository],

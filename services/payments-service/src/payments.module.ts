@@ -4,7 +4,7 @@
 import { Module } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
-import { LoggerModule, NOTIFICATION_SERVICE } from '@libs/common';
+import { HealthModule, LoggerModule, NOTIFICATION_SERVICE } from '@libs/common';
 import { getAppConfig } from './config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
@@ -23,6 +23,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         }),
       },
     ]),
+    HealthModule,
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService],

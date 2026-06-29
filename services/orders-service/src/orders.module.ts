@@ -5,6 +5,7 @@ import { OrdersService } from './orders.service';
 import {
   AUTH_SERVICE,
   DatabaseModule,
+  HealthModule,
   LoggerModule,
   PAYMENTS_SERVICE,
 } from '@libs/common';
@@ -42,6 +43,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         }),
       },
     ]),
+    HealthModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService, OrdersRepository],

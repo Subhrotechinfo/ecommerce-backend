@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
-import { LoggerModule } from '@libs/common';
+import { HealthModule, LoggerModule } from '@libs/common';
 import { getAppConfig } from './config';
 
 @Module({
-  imports: [LoggerModule.forRoot(getAppConfig().appName)],
+  imports: [LoggerModule.forRoot(getAppConfig().appName), HealthModule],
   controllers: [NotificationController],
   providers: [NotificationService],
 })

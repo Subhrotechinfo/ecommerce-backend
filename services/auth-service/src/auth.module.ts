@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 
 import { UsersModule } from './users/users.module';
 import { getAppConfig } from './config';
-import { LoggerModule } from '@libs/common';
+import { HealthModule, LoggerModule } from '@libs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -31,6 +31,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         signOptions: { expiresIn: getAppConfig().JWT_EXPIRES_IN },
       }),
     }),
+    HealthModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],

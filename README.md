@@ -15,7 +15,6 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/Subhrotechinfo/ecommerce-backend)
 ![GitHub stars](https://img.shields.io/github/stars/Subhrotechinfo/ecommerce-backend?style=social)
 
-
 A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker, deployed to **Google Kubernetes Engine (GKE)** via **Google Cloud Build** with images stored in **Google Artifact Registry**.
 
 ---
@@ -58,6 +57,7 @@ ecommerce-baseline/
 Handles all authentication and authorization concerns for the platform.
 
 **Responsibilities:**
+
 - User registration and login
 - JWT token generation and validation
 - Password hashing and verification
@@ -68,6 +68,7 @@ Handles all authentication and authorization concerns for the platform.
 Manages outbound email notifications via SMTP using [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) for secure, token-based authentication.
 
 **Responsibilities:**
+
 - Email delivery via SMTP with Google OAuth2 authentication
 - OAuth2 access token retrieval using a refresh token
 - Event-driven notification triggers
@@ -79,6 +80,7 @@ Manages outbound email notifications via SMTP using [Google OAuth2](https://deve
 Manages the full order lifecycle for the e-commerce platform.
 
 **Responsibilities:**
+
 - Order creation and management
 - Order status tracking and updates
 - Cart and checkout processing
@@ -89,6 +91,7 @@ Manages the full order lifecycle for the e-commerce platform.
 Handles payment processing and financial transactions via the [Stripe](https://stripe.com/) payment gateway.
 
 **Responsibilities:**
+
 - Payment charge creation and processing via Stripe
 - Stripe webhook handling and event verification
 - Transaction history and reconciliation
@@ -99,6 +102,7 @@ Handles payment processing and financial transactions via the [Stripe](https://s
 Manages the product catalog for the e-commerce platform.
 
 **Responsibilities:**
+
 - CRUD operations for products
 - Product listing and filtering
 - Inventory/stock management
@@ -170,6 +174,7 @@ docker-compose up --build
 ```
 
 This starts:
+
 - `auth-service`
 - `notification-service`
 - `orders-service`
@@ -280,34 +285,94 @@ This project uses **Google Cloud Build** to automate building and pushing Docker
 ```yaml
 steps:
   # Auth Service
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions', '-f', 'services/auth-service/Dockerfile', '.']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions']
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production",
+        "-f",
+        "services/auth-service/Dockerfile",
+        ".",
+      ]
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production",
+      ]
 
   # Notification Service
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions', '-f', 'services/notification-service/Dockerfile', '.']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions']
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/notification-service/production",
+        "-f",
+        "services/notification-service/Dockerfile",
+        ".",
+      ]
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/notification-service/production",
+      ]
 
   # Orders Service
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions', '-f', 'services/orders-service/Dockerfile', '.']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions']
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/production",
+        "-f",
+        "services/orders-service/Dockerfile",
+        ".",
+      ]
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/production",
+      ]
 
   # Payments Service
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions', '-f', 'services/payments-service/Dockerfile', '.']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions']
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/production",
+        "-f",
+        "services/payments-service/Dockerfile",
+        ".",
+      ]
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/production",
+      ]
 
   # Products Service
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions', '-f', 'services/products/Dockerfile', '.']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-south1-docker.pkg.dev/ecommerce-497413/products/productions']
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/products/production",
+        "-f",
+        "services/products/Dockerfile",
+        ".",
+      ]
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/ecommerce-499513/products/production",
+      ]
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -335,13 +400,13 @@ All Docker images are stored in **Google Artifact Registry** in the `asia-south1
 
 ### Image Registry URLs
 
-| Service              | Registry Path                                                                 |
-| -------------------- | ----------------------------------------------------------------------------- |
-| Auth Service         | `asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions`        |
-| Notification Service | `asia-south1-docker.pkg.dev/ecommerce-497413/notification-service/productions`|
-| Orders Service       | `asia-south1-docker.pkg.dev/ecommerce-497413/order-service/productions`       |
-| Payments Service     | `asia-south1-docker.pkg.dev/ecommerce-497413/payments-service/productions`    |
-| Products Service     | `asia-south1-docker.pkg.dev/ecommerce-497413/products/productions`            |
+| Service              | Registry Path                                                                  |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Auth Service         | `asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/productions`         |
+| Notification Service | `asia-south1-docker.pkg.dev/ecommerce-499513/notification-service/productions` |
+| Orders Service       | `asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/productions`       |
+| Payments Service     | `asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/productions`     |
+| Products Service     | `asia-south1-docker.pkg.dev/ecommerce-499513/products/productions`             |
 
 ### Pull an Image Manually
 
@@ -350,7 +415,7 @@ All Docker images are stored in **Google Artifact Registry** in the `asia-south1
 gcloud auth configure-docker asia-south1-docker.pkg.dev
 
 # Pull a specific image
-docker pull asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions:latest
+docker pull asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production:latest
 ```
 
 ---
@@ -472,7 +537,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: asia-south1-docker.pkg.dev/ecommerce-497413/auth-service/productions:latest
+          image: asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production:latest
           ports:
             - containerPort: 3001
           envFrom:
@@ -524,7 +589,7 @@ Google Cloud Build (cloudbuild.yaml)
         ├── Build Docker images for all 5 services
         │
         └── Push images to Google Artifact Registry
-                  (asia-south1-docker.pkg.dev/ecommerce-497413/...)
+                  (asia-south1-docker.pkg.dev/ecommerce-499513/...)
                         │
                         ▼
               kubectl rollout restart
@@ -666,6 +731,7 @@ Defined in `turbo.json`, the pipelines enable smart caching and parallel task ex
 ### Global Dependencies
 
 Turborepo treats the following as global — any change to them invalidates the cache for **all** tasks:
+
 - `.env` — shared environment config
 - `tsconfig.json` — root TypeScript configuration
 
@@ -705,7 +771,7 @@ This project is licensed under the [MIT License](./LICENSE).
 ---
 
 <p align="center">
-  Made with ❤️ by <strong>Subhro Chatterjee</strong>
+  Made with ❤️ by <strong>Subhro Chatterjee </strong>
 </p>
 
 <p align="center">

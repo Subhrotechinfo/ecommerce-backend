@@ -14,7 +14,7 @@ export class PaymentsService {
   constructor(
     @Inject(NOTIFICATION_SERVICE)
     private readonly notificationService: ClientProxy,
-  ) { }
+  ) {}
   async createCharge(data: PaymentsCreateChargeDto): Promise<any> {
     const customer = await this.stripe.customers.create({
       name: 'Jenny Rosen', //change this to dynamic
