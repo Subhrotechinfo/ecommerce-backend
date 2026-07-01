@@ -8,15 +8,24 @@
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
 ![Helm](https://img.shields.io/badge/Helm-0F1689?logo=helm&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?logo=googlecloud&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=white)
 ![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?logo=apachekafka&logoColor=white)
 ![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)
+![AWS CodePipeline](https://img.shields.io/badge/AWS_CodePipeline-527FFF?logo=amazonaws&logoColor=white)
+![AWS ECR](https://img.shields.io/badge/AWS_ECR-FF9900?logo=amazonecs&logoColor=white)
+![AWS EKS](https://img.shields.io/badge/AWS_EKS-FF9900?logo=amazoneks&logoColor=white)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Subhrotechinfo/ecommerce-backend)
 ![GitHub stars](https://img.shields.io/github/stars/Subhrotechinfo/ecommerce-backend?style=social)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker, deployed to **Google Kubernetes Engine (GKE)** via **Google Cloud Build** with images stored in **Google Artifact Registry**.
+
+A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker. The platform supports two parallel deployment paths:
+
+- **Google Cloud** — Cloud Build → Artifact Registry → GKE
+- **AWS** — CodePipeline/CodeBuild → Elastic Container Registry (ECR) → EKS
 
 ---
 
@@ -39,8 +48,9 @@ ecommerce-baseline/
 ├── .env                             # Environment variables (local)
 ├── .env.example                     # Environment variable template
 ├── .gitignore
-├── .npmrc
+├── buildspec.yaml                   # AWS CodeBuild/CodePipeline build spec
 ├── cloudbuild.yaml                  # Google Cloud Build CI/CD pipeline
+├── cluster.yaml                     # eksctl config for AWS EKS cluster creation
 ├── docker-compose.yaml              # Root-level multi-service orchestration
 ├── package.json
 ├── pnpm-lock.yaml
@@ -114,7 +124,7 @@ Manages the product catalog for the e-commerce platform.
 ## 🛠️ Tech Stack
 
 | Layer            | Technology                                                                         |
-| ---------------- | ---------------------------------------------------------------------------------- |
+| ----------------- | ----------------------------------------------------------------------------------- |
 | Runtime          | [Node.js](https://nodejs.org/)                                                     |
 | Framework        | [NestJS](https://nestjs.com/)                                                      |
 | Language         | TypeScript                                                                         |
@@ -122,9 +132,10 @@ Manages the product catalog for the e-commerce platform.
 | Monorepo         | [Turborepo](https://turbo.build/repo)                                              |
 | Package Manager  | [PNPM](https://pnpm.io/)                                                           |
 | Containerization | [Docker](https://www.docker.com/) & Docker Compose                                 |
-| Orchestration    | [Kubernetes (GKE)](https://cloud.google.com/kubernetes-engine)                     |
-| CI/CD            | [Google Cloud Build](https://cloud.google.com/build)                               |
-| Image Registry   | [Google Artifact Registry](https://cloud.google.com/artifact-registry)             |
+| Orchestration    | [Kubernetes (GKE / EKS)](https://kubernetes.io/)                                   |
+| CI/CD (GCP)      | [Google Cloud Build](https://cloud.google.com/build)                               |
+| CI/CD (AWS)      | [AWS CodePipeline](https://aws.amazon.com/codepipeline/) & [AWS CodeBuild](https://aws.amazon.com/codebuild/) |
+| Image Registry   | [Google Artifact Registry](https://cloud.google.com/artifact-registry) / [AWS ECR](https://aws.amazon.com/ecr/) |
 | Payment Gateway  | [Stripe](https://stripe.com/)                                                      |
 | Email Delivery   | SMTP with [Google OAuth2](https://developers.google.com/identity/protocols/oauth2) |
 
@@ -140,6 +151,8 @@ Make sure you have the following installed:
 - [MongoDB](https://www.mongodb.com/) (or use the Docker Compose setup)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) (for Kubernetes deployments)
 - [Google Cloud SDK (`gcloud`)](https://cloud.google.com/sdk/docs/install) (for GKE & Cloud Build)
+- [AWS CLI](https://aws.amazon.com/cli/) (for ECR, CodePipeline & EKS)
+- [eksctl](https://eksctl.io/) (for creating the AWS EKS cluster)
 
 ---
 
@@ -402,7 +415,7 @@ All Docker images are stored in **Google Artifact Registry** in the `asia-south1
 ### Image Registry URLs
 
 | Service              | Registry Path                                                                  |
-| -------------------- | ------------------------------------------------------------------------------ |
+| --------------------- | -------------------------------------------------------------------------------- |
 | Auth Service         | `asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/productions`         |
 | Notification Service | `asia-south1-docker.pkg.dev/ecommerce-499513/notification-service/productions` |
 | Orders Service       | `asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/productions`       |
@@ -579,7 +592,7 @@ Reference the secret in your deployment manifests using `envFrom.secretRef`.
 
 ---
 
-## 🏗️ Full CI/CD Flow
+## 🏗️ Full CI/CD Flow (GCP)
 
 ```
 GitHub Push (main branch)
@@ -603,6 +616,171 @@ Google Cloud Build (cloudbuild.yaml)
 
 ---
 
+## 🟧 AWS CodePipeline / CodeBuild — CI/CD Automation
+
+As an alternative to Google Cloud Build, this project also ships an **AWS CodePipeline** pipeline backed by **AWS CodeBuild**. The build steps are defined in [`buildspec.yaml`](./buildspec.yaml) at the root of the repository, and images are pushed to a **private Amazon ECR** registry in the `ap-south-1` region.
+
+### How It Works
+
+1. A push to the tracked branch triggers the CodePipeline source stage (CodeCommit/GitHub/CodeStar connection).
+2. The CodeBuild stage authenticates to ECR, then builds a Docker image for each microservice using its respective `Dockerfile`.
+3. Each image is tagged `latest` and pushed to its own **private ECR repository** under AWS account `971598352479` in `ap-south-1`.
+
+### CodeBuild Spec (`buildspec.yaml`)
+
+```yaml
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 971598352479.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+      - docker build -t auth-service -f ./services/auth-service/Dockerfile .
+      - docker tag auth-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest
+
+      - docker build -t notification-service -f ./services/notification-service/Dockerfile .
+      - docker tag notification-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/notification-service:latest
+
+      - docker build -t orders-service -f ./services/orders-service/Dockerfile .
+      - docker tag orders-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service:latest
+
+      - docker build -t payments-service -f ./services/payments-service/Dockerfile .
+      - docker tag payments-service:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service:latest
+
+      - docker build -t products -f ./services/products/Dockerfile .
+      - docker tag products:latest 971598352479.dkr.ecr.ap-south-1.amazonaws.com/products:latest
+
+  post_build:
+    commands:
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/notification-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service:latest
+      - docker push 971598352479.dkr.ecr.ap-south-1.amazonaws.com/products:latest
+```
+
+### Setting Up the CodePipeline
+
+1. Navigate to **CodePipeline** in the [AWS Console](https://console.aws.amazon.com/codesuite/codepipeline/home) and create a new pipeline.
+2. Connect the source stage to your GitHub repository (via a CodeStar Connection) or CodeCommit.
+3. Add a **CodeBuild** build stage pointing to `buildspec.yaml` at the repo root.
+4. Ensure the CodeBuild service role has permissions for `ecr:GetAuthorizationToken`, `ecr:BatchCheckLayerAvailability`, `ecr:PutImage`, `ecr:InitiateLayerUpload`, `ecr:UploadLayerPart`, and `ecr:CompleteLayerUpload`.
+5. (Optional) Add a deploy stage that runs `kubectl rollout restart` against the EKS cluster after a successful build.
+
+---
+
+## 🗃️ AWS ECR — Private Image Storage
+
+All Docker images are stored in **private Amazon ECR repositories** in the `ap-south-1` region under AWS account `971598352479`.
+
+### Image Registry URLs
+
+| Service              | Registry Path                                                          |
+| --------------------- | -------------------------------------------------------------------------- |
+| Auth Service         | `971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service`           |
+| Notification Service | `971598352479.dkr.ecr.ap-south-1.amazonaws.com/notification-service`   |
+| Orders Service       | `971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service`         |
+| Payments Service     | `971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service`       |
+| Products Service     | `971598352479.dkr.ecr.ap-south-1.amazonaws.com/products`               |
+
+> 🔒 These repositories are **private**. Only IAM principals with the relevant ECR permissions can pull or push images.
+
+### Authenticate Docker with ECR (local pulls/pushes)
+
+```bash
+aws ecr get-login-password --region ap-south-1 | \
+  docker login --username AWS --password-stdin 971598352479.dkr.ecr.ap-south-1.amazonaws.com
+```
+
+### Pull an Image Manually
+
+```bash
+docker pull 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest
+```
+
+---
+
+## ☸️ AWS EKS — Cluster Creation
+
+The AWS Kubernetes cluster is provisioned using [`eksctl`](https://eksctl.io/) from the [`cluster.yaml`](./cluster.yaml) config at the root of the repository.
+
+### `cluster.yaml`
+
+```yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ecommerce
+  region: ap-south-1
+
+nodeGroups:
+  - name: ng-1
+    instanceType: t2.micro
+    desiredCapacity: 3
+```
+
+### Create the Cluster
+
+```bash
+eksctl create cluster -f cluster.yaml
+```
+
+This provisions an EKS cluster named `ecommerce` in `ap-south-1` with a managed node group (`ng-1`) of 3 `t2.micro` nodes.
+
+### Get Cluster Credentials
+
+```bash
+aws eks update-kubeconfig --name ecommerce --region ap-south-1
+```
+
+### Deploy Services to EKS
+
+Once `kubectl` is pointed at the EKS cluster, deployment uses the same manifests as GKE:
+
+```bash
+kubectl apply -f k8s/ecommerce/
+```
+
+> ℹ️ Update the `image:` field in each `deployment.yaml` to reference the corresponding ECR path (e.g. `971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest`) when deploying to EKS.
+
+### Delete the Cluster
+
+```bash
+eksctl delete cluster -f cluster.yaml
+```
+
+---
+
+## 🏗️ Full CI/CD Flow (AWS)
+
+```
+GitHub Push
+        │
+        ▼
+AWS CodePipeline (source stage)
+        │
+        ▼
+AWS CodeBuild (buildspec.yaml)
+        │
+        ├── docker login to ECR (971598352479.dkr.ecr.ap-south-1.amazonaws.com)
+        ├── Build Docker images for all 5 services
+        │
+        └── Push images to private Amazon ECR
+                        │
+                        ▼
+              kubectl rollout restart
+                        │
+                        ▼
+             Amazon EKS (cluster: ecommerce)
+              Pods pull latest images
+              and serve traffic
+```
+
+---
+
 ## 🌍 Environment Variables
 
 Copy `.env.example` to `.env` and fill in the values. Key variables include:
@@ -617,7 +795,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Auth Service
 
 | Variable                | Description                                    |
-| ----------------------- | ---------------------------------------------- |
+| ------------------------ | -------------------------------------------------- |
 | `AUTH_SERVICE_APP_NAME` | Display name for the auth service              |
 | `AUTH_SERVICE_APP_PORT` | HTTP port for the auth service                 |
 | `AUTH_SERVICE_TCP_PORT` | TCP port for inter-service communication       |
@@ -628,14 +806,14 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Products Service
 
 | Variable                   | Description                           |
-| -------------------------- | ------------------------------------- |
+| --------------------------- | ---------------------------------------- |
 | `PRODUCT_SERVICE_APP_NAME` | Display name for the products service |
 | `PRODUCT_SERVICE_APP_PORT` | HTTP port for the products service    |
 
 ### Orders Service
 
 | Variable                  | Description                              |
-| ------------------------- | ---------------------------------------- |
+| --------------------------- | ------------------------------------------ |
 | `ORDERS_SERVICE_APP_NAME` | Display name for the orders service      |
 | `ORDERS_SERVICE_APP_PORT` | HTTP port for the orders service         |
 | `ORDERS_TCP_PORT`         | TCP port for inter-service communication |
@@ -643,7 +821,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Payments Service
 
 | Variable                    | Description                                       |
-| --------------------------- | ------------------------------------------------- |
+| ----------------------------- | ----------------------------------------------------- |
 | `PAYMENTS_SERVICE_APP_NAME` | Display name for the payments service             |
 | `PAYMENTS_SERVICE_APP_PORT` | HTTP port for the payments service                |
 | `PAYMENTS_HOST`             | Hostname used by other services to reach payments |
@@ -653,7 +831,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Notification Service
 
 | Variable                        | Description                                            |
-| ------------------------------- | ------------------------------------------------------ |
+| ---------------------------------- | ---------------------------------------------------------- |
 | `NOTIFICATION_SERVICE_APP_NAME` | Display name for the notification service              |
 | `NOTIFICATION_SERVICE_APP_PORT` | HTTP port for the notification service                 |
 | `NOTIFICATION_HOST`             | Hostname used by other services to reach notifications |
@@ -662,6 +840,14 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 | `GOOGLE_OAUTH_CLIENT_ID`        | Google OAuth2 client ID for SMTP authentication        |
 | `GOOGLE_OAUTH_CLIENT_SECRET`    | Google OAuth2 client secret for SMTP authentication    |
 | `GOOGLE_OAUTH_REFRESH_TOKEN`    | OAuth2 refresh token to obtain SMTP access tokens      |
+
+### AWS Deployment
+
+| Variable                | Description                                              |
+| -------------------------- | -------------------------------------------------------------- |
+| `AWS_ACCOUNT_ID`         | AWS account ID hosting the ECR repositories (`971598352479`) |
+| `AWS_REGION`             | AWS region for ECR/EKS (`ap-south-1`)                        |
+| `EKS_CLUSTER_NAME`       | Name of the EKS cluster (`ecommerce`)                         |
 
 > ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
 
@@ -672,7 +858,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Auth Service Endpoints
 
 | Method | Endpoint         | Description              |
-| ------ | ---------------- | ------------------------ |
+| ------ | ----------------- | -------------------------- |
 | `POST` | `/auth/register` | Register a new user      |
 | `POST` | `/auth/login`    | Login and receive JWT    |
 | `GET`  | `/auth/profile`  | Get current user profile |
@@ -680,7 +866,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Notification Service Endpoints
 
 | Method | Endpoint              | Description               |
-| ------ | --------------------- | ------------------------- |
+| ------ | ---------------------- | ---------------------------- |
 | `POST` | `/notifications/send` | Trigger a notification    |
 | `GET`  | `/notifications`      | List notifications        |
 | `GET`  | `/notifications/:id`  | Get a single notification |
@@ -688,7 +874,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Orders Service Endpoints
 
 | Method   | Endpoint      | Description            |
-| -------- | ------------- | ---------------------- |
+| -------- | -------------- | ------------------------ |
 | `GET`    | `/orders`     | List all orders        |
 | `GET`    | `/orders/:id` | Get a single order     |
 | `POST`   | `/orders`     | Create a new order     |
@@ -698,7 +884,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Payments Service Endpoints
 
 | Method | Endpoint            | Description                        |
-| ------ | ------------------- | ---------------------------------- |
+| ------ | -------------------- | ------------------------------------- |
 | `POST` | `/payments/charge`  | Create a new Stripe charge         |
 | `POST` | `/payments/webhook` | Receive and verify Stripe webhooks |
 | `GET`  | `/payments`         | List payment transactions          |
@@ -707,7 +893,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 ### Products Service Endpoints
 
 | Method   | Endpoint        | Description          |
-| -------- | --------------- | -------------------- |
+| -------- | ---------------- | ---------------------- |
 | `GET`    | `/products`     | List all products    |
 | `GET`    | `/products/:id` | Get a single product |
 | `POST`   | `/products`     | Create a new product |
@@ -721,7 +907,7 @@ Copy `.env.example` to `.env` and fill in the values. Key variables include:
 Defined in `turbo.json`, the pipelines enable smart caching and parallel task execution across all services.
 
 | Task          | Command            | Description                                                                      |
-| ------------- | ------------------ | -------------------------------------------------------------------------------- |
+| ------------- | -------------------- | ------------------------------------------------------------------------------------ |
 | `build`       | `pnpm build`       | Compiles all services; outputs to `dist/`. Depends on upstream builds (`^build`) |
 | `dev`         | `pnpm dev`         | Runs all services in watch mode. No cache, persistent process                    |
 | `start:dev`   | `pnpm start:dev`   | Starts services in dev mode; watches `.env*` files for changes                   |
@@ -749,7 +935,7 @@ nest new services/my-new-service
 2. Add it to `pnpm-workspace.yaml` if not auto-detected.
 3. Add a `Dockerfile` inside the new service.
 4. Add the service to `docker-compose.yaml`.
-5. Add build and push steps for the new service to `cloudbuild.yaml`.
+5. Add build and push steps for the new service to `cloudbuild.yaml` (GCP) and `buildspec.yaml` (AWS).
 6. Create `k8s/ecommerce/my-new-service/deployment.yaml` and `service.yaml`.
 7. Add any shared packages to `libs/` or `packages/` as needed.
 
