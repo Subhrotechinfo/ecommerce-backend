@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { INestApplication } from "@nestjs/common";
-import chalk from "chalk";
+import * as chalk from "chalk";
 import { WinstonModuleOptions } from "nest-winston";
 import { NodeEnv } from "../enums";
 import { Logger } from "nestjs-pino/Logger";
