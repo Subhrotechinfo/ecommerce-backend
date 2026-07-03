@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production
+        # image: asia-south1-docker.pkg.dev/ecommerce-499513/auth-service/production gcp 
+        image: 971598352479.dkr.ecr.ap-south-1.amazonaws.com/auth-service:latest #aws ecr repository pointing
         imagePullPolicy: Always
         command: ["node"]
         args: ["services/auth-service/dist/main"]

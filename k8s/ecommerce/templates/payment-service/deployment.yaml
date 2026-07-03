@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: payments-service
-        image: asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/production
+        # image: asia-south1-docker.pkg.dev/ecommerce-499513/payments-service/production
+        image: 971598352479.dkr.ecr.ap-south-1.amazonaws.com/payments-service:latest #aws ecr repository pointing to the payments-service image
         imagePullPolicy: Always
         command: ["node"]
         args: ["services/payments-service/dist/main"]

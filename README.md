@@ -8,23 +8,28 @@
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
 ![Helm](https://img.shields.io/badge/Helm-0F1689?logo=helm&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?logo=googlecloud&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=white)
-![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?logo=apachekafka&logoColor=white)
-![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)
 ![AWS CodePipeline](https://img.shields.io/badge/AWS_CodePipeline-527FFF?logo=amazonaws&logoColor=white)
 ![AWS ECR](https://img.shields.io/badge/AWS_ECR-FF9900?logo=amazonecs&logoColor=white)
 ![AWS EKS](https://img.shields.io/badge/AWS_EKS-FF9900?logo=amazoneks&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=white)
+![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?logo=apachekafka&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Subhrotechinfo/ecommerce-backend)
 ![GitHub stars](https://img.shields.io/github/stars/Subhrotechinfo/ecommerce-backend?style=social)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 
 A scalable, production-ready **NestJS microservices backend** for an e-commerce platform, orchestrated with [Turborepo](https://turbo.build/repo) for efficient monorepo management. Services communicate independently and are fully containerized with Docker. The platform supports two parallel deployment paths:
 
 - **Google Cloud** — Cloud Build → Artifact Registry → GKE
 - **AWS** — CodePipeline/CodeBuild → Elastic Container Registry (ECR) → EKS
+
+### 🔗 Live Deployment (AWS)
+
+```
+http://k8s-default-ecommerc-a819a1b0cb-993668267.ap-south-1.elb.amazonaws.com
+```
 
 ---
 
@@ -717,9 +722,15 @@ metadata:
 
 nodeGroups:
   - name: ng-1
-    instanceType: t2.micro
-    desiredCapacity: 3
+    instanceType: t3.micro
+    minSize: 3
+    maxSize: 8
+    desiredCapacity: 6
 ```
+
+> ⚠️ `t2.micro` is **not** free-tier eligible in all accounts/regions — AWS returned `InstanceType not eligible for Free Tier` when creating the nodegroup. Run `aws ec2 describe-instance-types --filters "Name=free-tier-eligible,Values=true" --region ap-south-1 --query "InstanceTypes[].InstanceType" --output table` to confirm which type your account gets; for most accounts it's `t3.micro`.
+>
+> `t3.micro` also only fits ~1 extra app pod per node after system pods (`aws-node`, `kube-proxy`, etc.) due to ENI/IP-based pod limits on EKS — hence `desiredCapacity: 6` to give all 5 microservices a schedulable slot with a little headroom.
 
 ### Create the Cluster
 
@@ -727,7 +738,13 @@ nodeGroups:
 eksctl create cluster -f cluster.yaml
 ```
 
-This provisions an EKS cluster named `ecommerce` in `ap-south-1` with a managed node group (`ng-1`) of 3 `t2.micro` nodes.
+This provisions an EKS cluster named `ecommerce` in `ap-south-1` with a managed node group (`ng-1`) of `t3.micro` nodes (min `3`, max `8`, desired `6`).
+
+### Scale the Node Group (if pods are stuck `Pending`)
+
+```bash
+eksctl scale nodegroup ng-1 -N 6 --cluster ecommerce -M 6
+```
 
 ### Get Cluster Credentials
 
@@ -753,6 +770,65 @@ eksctl delete cluster -f cluster.yaml
 
 ---
 
+## ⚖️ AWS Load Balancer Controller — Ingress on EKS
+
+Unlike GKE, EKS does **not** provision a load balancer automatically for `Ingress` resources — the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/) must be installed on the cluster before any `Ingress` manifest will result in a working ALB.
+
+### Ingress Manifest (`ingress.yaml`)
+
+The `Ingress` resource uses `alb.ingress.kubernetes.io` annotations to tell the controller to provision an internet-facing Application Load Balancer, routing to each service by path:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing # attach the load balancer to a public subnet
+    kubernetes.io/ingress.class: alb # provision an Application Load Balancer
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /products/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: products
+                port:
+                  number: 5000
+          - path: /auth/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-service-http
+                port:
+                  number: 5001
+          - path: /orders/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: orders-service-http
+                port:
+                  number: 5005
+```
+
+### Live ALB Endpoint
+
+```
+http://k8s-default-ecommerc-a819a1b0cb-993668267.ap-south-1.elb.amazonaws.com
+```
+
+| Route         | Service              |
+| -------------- | ---------------------- |
+| `/products/*` | `products` (port 5000) |
+| `/auth/*`     | `auth-service-http` (port 5001) |
+| `/orders/*`   | `orders-service-http` (port 5005) |
+
+> ℹ️ A `/payments/*` and `/notifications/*` route can be added the same way once those services expose an HTTP `Service` — mirror the pattern above with the correct service name and port.
+
+---
+
 ## 🏗️ Full CI/CD Flow (AWS)
 
 ```
@@ -775,7 +851,15 @@ AWS CodeBuild (buildspec.yaml)
                         ▼
              Amazon EKS (cluster: ecommerce)
               Pods pull latest images
-              and serve traffic
+                        │
+                        ▼
+        AWS Load Balancer Controller (kube-system)
+        reads Ingress → provisions/updates ALB
+                        │
+                        ▼
+   k8s-default-ecommerc-...elb.amazonaws.com
+        routes /products, /auth, /orders
+              and serves traffic
 ```
 
 ---
@@ -957,7 +1041,7 @@ This project is licensed under the [MIT License](./LICENSE).
 ---
 
 <p align="center">
-  Made with ❤️ by <strong>Subhro Chatterjee </strong>
+  Made with ❤️ and <img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" alt="Open Source Love" /> by <strong>Subhro Chatterjee</strong>
 </p>
 
 <p align="center">

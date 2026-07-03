@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: orders-service
-        image: asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/production
+        # image: asia-south1-docker.pkg.dev/ecommerce-499513/orders-service/production
+        image: 971598352479.dkr.ecr.ap-south-1.amazonaws.com/orders-service:latest
         imagePullPolicy: Always
         command: ["node"]
         args: ["services/orders-service/dist/main"]

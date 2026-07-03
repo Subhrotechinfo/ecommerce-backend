@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ecommerce
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing #to make sure this load balancer is attached to a public subnet
+    kubernetes.io/ingress.class: alb #to provision an application load balancer
 spec:
   rules:
    - http:
